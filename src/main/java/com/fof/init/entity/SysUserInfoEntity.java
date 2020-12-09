@@ -1,7 +1,7 @@
 package com.fof.init.entity;
 
-
 import com.fof.common.entity.BaseNoIdEntity;
+import com.fof.common.util.Constants;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,40 +12,49 @@ import java.util.List;
 @Entity
 @Table(name = "SYS_USER_INFO")
 public class SysUserInfoEntity extends BaseNoIdEntity {
-    /**名称*/
-    @Column(name="simplename",columnDefinition="varchar(225)")
+    /**简称*/
+    @Column(name="SIMPLENAME",columnDefinition="varchar(225)")
     private String simpleName;
     /**全名*/
-    @Column(name="fullname",columnDefinition="varchar(225)") 
+    @Column(name="FULLNAME",columnDefinition="varchar(225)")
     private String fullName;
-    /**用户名*/
-    @Column(name="username",columnDefinition="varchar(225)") 
+    /**登录名*/
+    @Column(name="USERNAME",columnDefinition="varchar(225)")
     private String userName;
     /**密码*/
-    @Column(name="password",columnDefinition="varchar(225)") 
+    @Column(name="PASSWORD",columnDefinition="varchar(225)")
     private String passWord;
     /**密码盐*/
-    @Column(name="salt",columnDefinition="varchar(225)") 
+    @Column(name="SALT",columnDefinition="varchar(225)")
     private String salt;
     /**用户状态*/
-    @Column(name="state",columnDefinition="varchar(225)") 
+    @Column(name="STATE",columnDefinition="varchar(225)")
     private String state;
-    
-    /**用户类型*/
-    @Column(name="usertype",columnDefinition="varchar(225)") 
-    private String userType;
-
+    /**表示帐号是否未过期*/
+    @Column(name="ACCOUNTNONEXPIRED",columnDefinition="char")
+    private boolean accountNonExpired;
+    /**表示帐号是否未锁定*/
+    @Column(name="ACCOUNTNONLOCKED",columnDefinition="char")
+    private boolean accountNonLocked;
+    /**表示登录凭据是否未过期*/
+    @Column(name="CREDENTIALSNONEXPIRED",columnDefinition="char")
+    private boolean credentialsNonExpired;
+    /**用户可用状态*/
+    @Column(name="ENABLED",columnDefinition="char")
+    private boolean enabled;
     @Transient
     private String stateText;
-    
     @Transient
-    private String userTypeText;
-
+    private String accountNonExpiredText;
     @Transient
-    private String token;
-    
+    private String accountNonLockedText;
+    @Transient
+    private String credentialsNonExpiredText;
     @Transient
     private String oldUserName;
+
+    @Transient
+    private List<SysRoleInfoEntity> sysRoleInfoList;
 
     public String getCredentialsSalt(){
         return this.userName+this.salt;
@@ -99,36 +108,12 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
         this.state = state;
     }
 
-    public String getUserType() {
-        return userType;
-    }
-
-    public void setUserType(String userType) {
-        this.userType = userType;
-    }
-
     public String getStateText() {
         return stateText;
     }
 
     public void setStateText(String stateText) {
         this.stateText = stateText;
-    }
-
-    public String getUserTypeText() {
-        return userTypeText;
-    }
-
-    public void setUserTypeText(String userTypeText) {
-        this.userTypeText = userTypeText;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getOldUserName() {
@@ -139,4 +124,67 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
         this.oldUserName = oldUserName;
     }
 
+    public List<SysRoleInfoEntity> getSysRoleInfoList() {
+        return sysRoleInfoList;
+    }
+
+    public void setSysRoleInfoList(List<SysRoleInfoEntity> sysRoleInfoList) {
+        this.sysRoleInfoList = sysRoleInfoList;
+    }
+
+    public boolean isAccountNonExpired() {
+        return accountNonExpired ? true:false;
+    }
+
+    public void setAccountNonExpired(boolean accountNonExpired) {
+        this.accountNonExpired = accountNonExpired;
+    }
+
+    public boolean isAccountNonLocked() {
+        return accountNonLocked? true:false;
+    }
+
+    public void setAccountNonLocked(boolean accountNonLocked) {
+        this.accountNonLocked = accountNonLocked;
+    }
+
+    public boolean isCredentialsNonExpired() {
+        return credentialsNonExpired ? true:false;
+    }
+
+    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
+        this.credentialsNonExpired = credentialsNonExpired;
+    }
+
+    public boolean isEnabled() {
+        return enabled ? true:false;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String getAccountNonExpiredText() {
+        return accountNonExpiredText;
+    }
+
+    public void setAccountNonExpiredText(String accountNonExpiredText) {
+        this.accountNonExpiredText = accountNonExpiredText;
+    }
+
+    public String getAccountNonLockedText() {
+        return accountNonLockedText;
+    }
+
+    public void setAccountNonLockedText(String accountNonLockedText) {
+        this.accountNonLockedText = accountNonLockedText;
+    }
+
+    public String getCredentialsNonExpiredText() {
+        return credentialsNonExpiredText;
+    }
+
+    public void setCredentialsNonExpiredText(String credentialsNonExpiredText) {
+        this.credentialsNonExpiredText = credentialsNonExpiredText;
+    }
 }

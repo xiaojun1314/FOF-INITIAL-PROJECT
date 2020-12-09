@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.UserInfoDao">
+     <sql id="all_columns">
+        ID,SIMPLENAME,FULLNAME,USERNAME,PASSWORD,SALT,STATE,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+    </sql> 
+   <sql id="update_sql">
+		UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+    <sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>    
+    <sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+    <sql id="pagination_end">
+        <![CDATA[  
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1  
+	    ]]>	 
+    </sql>
+    <sql id="sql_where">
+        <if test="id != null and id != ''">
+            AND ID=#{id}
+        </if>
+        <if test="simpleName != null and simpleName != ''">
+            AND SIMPLENAME=#{simpleName}
+        </if>
+        <if test="fullName != null and fullName != ''">
+            AND FULLNAME=#{fullName}
+        </if>
+        <if test="userName != null and userName != ''">
+            AND USERNAME=#{userName}
+        </if>
+        <if test="passWord != null and passWord != ''">
+            AND PASSWORD=#{passWord}
+        </if>
+        <if test="salt != null and salt != ''">
+            AND SALT=#{salt}
+        </if>
+        <if test="state != null and state != ''">
+            AND STATE=#{state}
+        </if>
+        <if test="deleteFlag != null and deleteFlag != ''">
+            AND DELETE_FLAG=#{deleteFlag}
+        </if>
+        <if test="createTime != null and createTime != ''">
+            AND CREATE_TIME=#{createTime}
+        </if>
+        <if test="creater != null and creater != ''">
+            AND CREATER=#{creater}
+        </if>
+        <if test="updateTime != null and updateTime != ''">
+            AND UPDATE_TIME=#{updateTime}
+        </if>
+        <if test="updater != null and updater != ''">
+            AND UPDATER=#{updater}
+        </if>
+        <if test="deleteTime != null and deleteTime != ''">
+            AND DELETE_TIME=#{deleteTime}
+        </if>
+        <if test="deleter != null and deleter != ''">
+            AND DELETER=#{deleter}
+        </if>
+    </sql>
+
+	<!--根据用户名查询 用户信息-->
+	<select id="getByUserName"  resultType="com.fof.init.entity.SysUserInfoEntity" parameterType="java.lang.String">
+   	  	SELECT  * from SYS_USER_INFO where  1=1 and USERNAME=#{userName}
+  	</select>
+
+    <!-- 查询所有数据 -->
+    <select id="getAll" resultType="com.fof.init.entity.SysUserInfoEntity" parameterType="java.util.HashMap">
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_start" />
+            </if>
+        </if>
+        SELECT * FROM SYS_USER_INFO where 1=1
+        <include refid="sql_where" />
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField}
+        </if>
+        <if test="sortType != null and sortType != ''">
+            ${sortType},ID  DESC
+        </if>
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_end" />
+            </if>
+        </if>
+    </select>
+
+    <select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM SYS_USER_INFO WHERE 1=1
+        <include refid="sql_where" />
+    </select>
+
+</mapper>
