@@ -29,8 +29,6 @@ public class CustomizeFilterInvocationSecurityMetadataSource implements FilterIn
         //获取请求地址
         String requestUrl = ((FilterInvocation) o).getRequestUrl();
         /**
-
-
         //查询具体某个接口的权限
         List<SysPermission> permissionList =  new ArrayList<SysPermission>();
         SysPermission sysPermission1=new SysPermission();
@@ -63,7 +61,7 @@ public class CustomizeFilterInvocationSecurityMetadataSource implements FilterIn
             }
         }
         */
-List<String> list=new ArrayList<String>();
+        List<String> list=new ArrayList<String>();
         String[] attributes = new String[2];
         attributes[0]="ROLE_ADMIN";
         attributes[1]="query_user";
