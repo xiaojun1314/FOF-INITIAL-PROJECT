@@ -1,7 +1,6 @@
-package com.fof.component.security.service.impl;
+package com.fof.init.service.impl;
 
 import com.fof.init.dao.UserInfoDao;
-import com.fof.init.entity.SysRoleInfoEntity;
 import com.fof.init.entity.SysUserInfoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -21,7 +20,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Autowired
     private UserInfoDao userInfoDao;
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        System.out.println("userName"+userName);
+        SysUserInfoEntity sysUserInfoEntity = userInfoDao.getByUserName(userName);
+        /**
         System.out.println("username"+username);
         SysUserInfoEntity sysUserInfoEntity=new SysUserInfoEntity();
         sysUserInfoEntity.setUserName("admin");
@@ -30,9 +32,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         sysUserInfoEntity.setAccountNonExpired(true);
         sysUserInfoEntity.setAccountNonLocked(true);
         sysUserInfoEntity.setCredentialsNonExpired(true);
-
+*/
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_admin");
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
         GrantedAuthority grantedAuthority1 = new SimpleGrantedAuthority("query_user");
         grantedAuthorities.add(grantedAuthority);
         grantedAuthorities.add(grantedAuthority1);

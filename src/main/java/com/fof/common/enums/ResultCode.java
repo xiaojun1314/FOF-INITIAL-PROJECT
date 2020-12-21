@@ -12,36 +12,38 @@ package com.fof.common.enums;
  */
 public enum ResultCode {
     /* 成功 */
-    SUCCESS(200, "成功"),
+    SUCCESS(200, "成功",1),
 
     /* 默认失败 */
-    COMMON_FAIL(999, "失败"),
+    COMMON_FAIL(999, "失败",1),
 
     /* 参数错误：1000～1999 */
-    PARAM_NOT_VALID(1001, "参数无效"),
-    PARAM_IS_BLANK(1002, "参数为空"),
-    PARAM_TYPE_ERROR(1003, "参数类型错误"),
-    PARAM_NOT_COMPLETE(1004, "参数缺失"),
+    PARAM_NOT_VALID(1001, "参数无效",1),
+    PARAM_IS_BLANK(1002, "参数为空",1),
+    PARAM_TYPE_ERROR(1003, "参数类型错误",1),
+    PARAM_NOT_COMPLETE(1004, "参数缺失",1),
 
     /* 用户错误 */
-    USER_NOT_LOGIN(2001, "用户未登录"),
-    USER_ACCOUNT_EXPIRED(2002, "账号已过期"),
-    USER_CREDENTIALS_ERROR(2003, "密码错误"),
-    USER_CREDENTIALS_EXPIRED(2004, "密码过期"),
-    USER_ACCOUNT_DISABLE(2005, "账号不可用"),
-    USER_ACCOUNT_LOCKED(2006, "账号被锁定"),
-    USER_ACCOUNT_NOT_EXIST(2007, "账号不存在"),
-    USER_ACCOUNT_ALREADY_EXIST(2008, "账号已存在"),
-    USER_ACCOUNT_USE_BY_OTHERS(2009, "账号下线"),
+    USER_NOT_LOGIN(2001, "用户未登录",1),
+    USER_ACCOUNT_EXPIRED(2002, "账号已过期",1),
+    USER_CREDENTIALS_ERROR(2003, "密码错误",1),
+    USER_CREDENTIALS_EXPIRED(2004, "密码过期",1),
+    USER_ACCOUNT_DISABLE(2005, "账号不可用",1),
+    USER_ACCOUNT_LOCKED(2006, "账号被锁定",1),
+    USER_ACCOUNT_NOT_EXIST(2007, "账号不存在",1),
+    USER_ACCOUNT_ALREADY_EXIST(2008, "账号已存在",1),
+    USER_ACCOUNT_USE_BY_OTHERS(2009, "账号下线",1),
 
     /* 业务错误 */
-    NO_PERMISSION(3001, "没有权限");
+    NO_PERMISSION(3001, "没有权限",1);
     private Integer code;
     private String message;
+    private Integer showType;
 
-    ResultCode(Integer code, String message) {
+    ResultCode(Integer code, String message,Integer showType) {
         this.code = code;
         this.message = message;
+        this.showType = showType;
     }
 
     public Integer getCode() {
@@ -58,6 +60,14 @@ public enum ResultCode {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Integer getShowType() {
+        return showType;
+    }
+
+    public void setShowType(Integer showType) {
+        this.showType = showType;
     }
 
     /**

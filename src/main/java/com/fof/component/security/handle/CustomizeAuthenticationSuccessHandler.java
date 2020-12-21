@@ -24,7 +24,7 @@ import java.io.IOException;
 public class CustomizeAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         //更新用户表上次登录时间、更新人、更新时间等字段
         User userDetails = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -42,7 +42,7 @@ public class CustomizeAuthenticationSuccessHandler implements AuthenticationSucc
        // httpServletResponse.addHeader("authorization", "Bearer " + tokenCode);
         //返回json数据
         JsonResult result = ResultTool.success();
-        httpServletResponse.setContentType("text/json;charset=utf-8");
-        httpServletResponse.getWriter().write(JSON.toJSONString(result));
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(JSON.toJSONString(result));
     }
 }

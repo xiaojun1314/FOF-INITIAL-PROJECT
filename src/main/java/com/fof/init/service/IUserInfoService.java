@@ -11,5 +11,7 @@ public interface IUserInfoService {
 	
 	 public SysUserInfoEntity findByUserName(String username);
 
+	public List<SysUserInfoEntity> getAll(Map<String,Object> map, String sorter);
 
+	public Integer getCount(Map<String,Object> map);
 }

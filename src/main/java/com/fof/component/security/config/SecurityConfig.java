@@ -1,9 +1,8 @@
 package com.fof.component.security.config;
 
 import com.fof.component.security.handle.*;
-import com.fof.component.security.service.impl.UserDetailsServiceImpl;
-import com.fof.init.service.IUserInfoService;
-import com.fof.init.service.impl.UserInfoServiceImpl;
+
+import com.fof.init.service.impl.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +12,7 @@ import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 
@@ -65,6 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomizeInvalidSessionStrategyHandler invalidSessionStrategy;
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+
 
 
     protected void configure(HttpSecurity http) throws Exception {
@@ -81,7 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         }).
         and().
         authenticationProvider(authenticationProvider()).
-        formLogin().
+        formLogin().usernameParameter("userName").passwordParameter("passWord").
         loginPage("http://localhost:8000/user/login").loginProcessingUrl("/login").//loginPage:登录页面;loginProcessingUrl:登录地址重命名
         permitAll().
         successHandler(authenticationSuccessHandler).//登录成功处理逻辑
@@ -110,7 +114,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
         //对默认的UserDetailsService进行覆盖
-        authenticationProvider.setUserDetailsService(new UserDetailsServiceImpl());
+        authenticationProvider.setUserDetailsService(userDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
         return authenticationProvider;
     }
