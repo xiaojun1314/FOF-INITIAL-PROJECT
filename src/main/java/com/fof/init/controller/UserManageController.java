@@ -52,6 +52,7 @@ public class UserManageController {
 			searchParams.put("current",pageParams[0]);
         	json.put("pagination", JSON.toJSON(searchParams));
         	json.put("IsSuccess", true);
+			json.put("total", count);
         	json.put("Message", "查询成功");
         } catch (Exception e) {
     		e.printStackTrace();
@@ -67,7 +68,7 @@ public class UserManageController {
 
 	public  int[] initPage(String currentPage,String pageSize1) {
 		int pageNumber = Integer.parseInt(StringUtils.defaultIfBlank(currentPage,"1"));
-		int pageSize = Integer.parseInt(StringUtils.defaultIfBlank(pageSize1,"10"));
+		int pageSize = Integer.parseInt(StringUtils.defaultIfBlank(pageSize1,"5"));
 		return new int[] { pageNumber, pageSize };
 	}
 }
