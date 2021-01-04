@@ -19,10 +19,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @RequestMapping("/userManage")
@@ -37,20 +34,14 @@ public class UserManageController {
     	response.setContentType("application/json;charset=UTF-8");
     	try {
 			Map<String, Object> searchParams= CommonUtil.getSearchParameters("search_", params);
-    		int[] pageParams =initPage(StringHelper.null2String(params.get("currentPage")), StringHelper.null2String(params.get("pageSize")));
+    		int[] pageParams =initPage(StringHelper.null2String(params.get("current")), StringHelper.null2String(params.get("pageSize")));
     		searchParams.put("limit", pageParams[1]);
     		searchParams.put("offset", pageParams[0]);
     		searchParams.put("deleteFlag", Constants.DELFLG_N);
-    		System.out.println("1"+params.get("sorter"));
-			System.out.println("2"+StringHelper.null2String(params.get("sorter")));
-    		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringHelper.null2String(params.get("sorter")));
+    		System.out.println("sorter"+StringUtils.strip(params.get("sorter").toString(),"{}"));
+    		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringUtils.strip(params.get("sorter").toString(),"{}"));
     		json.put("data", list);
     		int count =userInfoService.getCount(searchParams);
-			searchParams.clear();
-			searchParams.put("total",count);
-			searchParams.put("pageSize",pageParams[1]);
-			searchParams.put("current",pageParams[0]);
-        	json.put("pagination", JSON.toJSON(searchParams));
         	json.put("IsSuccess", true);
 			json.put("total", count);
         	json.put("Message", "查询成功");

@@ -46,6 +46,12 @@ public class ApiController {
         map2.put("routes",list22);
         mapList.add(map2);
 
+        Map<String,Object> map3=new HashMap<String,Object>();
+        map3.put("path", "/list");
+        map3.put("name", "list.table-list");
+        map3.put("icon", "smile");
+        map3.put("component", "./ListTableList");
+        mapList.add(map3);
         // String jsonArray = JSONArray.toJSONString(mapList);
         // jsonArray=jsonArray.substring(1, jsonArray.length()-1);
         

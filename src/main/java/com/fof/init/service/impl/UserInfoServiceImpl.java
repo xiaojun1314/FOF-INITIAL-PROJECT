@@ -34,10 +34,10 @@ public class UserInfoServiceImpl implements IUserInfoService {
 	}
 
 	public  String[] initSorter(String sorter) {
-		//String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("-")[1].equals("descend")?"DESC":"ASC"),"DESC");
-		String sorterRule ="DESC";
-		String sorterField ="CREATE_TIME";
-		//String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("-")[0],"CREATE_TIME");
+		String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("=")[1].equals("descend")?"DESC":"ASC"),"DESC");
+		//String sorterRule ="DESC";
+		//String sorterField ="CREATE_TIME";
+		String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("=")[0],"CREATE_TIME");
 		return new String[] {sorterRule,sorterField};
 	}
 }
