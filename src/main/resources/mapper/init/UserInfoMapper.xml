@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fof.init.dao.UserInfoDao">
      <sql id="all_columns">
-        ID,SIMPLENAME,FULLNAME,USERNAME,PASSWORD,SALT,STATE,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+        ID,SIMPLENAME,FULLNAME,USERNAME,PASSWORD,SALT,USERCODE,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
     </sql> 
    <sql id="update_sql">
 		UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
@@ -37,8 +37,8 @@
         <if test="salt != null and salt != ''">
             AND SALT=#{salt}
         </if>
-        <if test="state != null and state != ''">
-            AND STATE=#{state}
+        <if test="userCode != null and userCode != ''">
+            AND USERCODE=#{userCode}
         </if>
         <if test="deleteFlag != null and deleteFlag != ''">
             AND DELETE_FLAG=#{deleteFlag}
@@ -63,9 +63,11 @@
         </if>
     </sql>
 
-	<!--根据用户名查询 用户信息-->
-	<select id="getByUserName"  resultType="com.fof.init.entity.SysUserInfoEntity" parameterType="java.lang.String">
-   	  	SELECT  * from SYS_USER_INFO where  1=1 and USERNAME=#{userName}
+	<!--根据用户名查询 用户信息 SELECT  * from SYS_USER_INFO where  1=1 and USERNAME=#{userName}-->
+	<select id="getByUserName"  resultType="com.fof.common.bean.SecurityUserInfo" parameterType="java.lang.String">
+   	  	select T1.ID,T1.USERNAME,T1.PASSWORD,T2.ACCOUNTNONEXPIRED,T2.ACCOUNTNONLOCKED,T2.CREDENTIALSNONEXPIRED,T2.ENABLED from
+        SYS_USER_INFO T1  JOIN SYS_USERSTATUS_INFO T2
+        ON T1.ID=T2.FOREIGNID WHERE T1.USERNAME=#{userName}
   	</select>
 
     <!-- 查询所有数据 -->
@@ -94,5 +96,85 @@
         SELECT COUNT(*) FROM SYS_USER_INFO WHERE 1=1
         <include refid="sql_where" />
     </select>
+
+    <delete id="delete">
+        UPDATE SYS_USER_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
+        WHERE ID IN
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id,jdbcType = VARCHAR}
+        </foreach>
+    </delete>
+
+    <insert id="insert" parameterType="com.fof.init.entity.SysUserInfoEntity" >
+        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+            select lower(sys_guid()) as GUID from dual
+        </selectKey>
+        INSERT INTO SYS_USER_INFO (<include refid="all_columns" />)
+        VALUES (
+        #{id,jdbcType = VARCHAR},
+        #{name,jdbcType = VARCHAR},
+        #{fullname,jdbcType = VARCHAR},
+        #{username,jdbcType = VARCHAR},
+        #{password,jdbcType = VARCHAR},
+        #{salt,jdbcType = VARCHAR},
+        #{userCode,jdbcType = VARCHAR},
+        #{delete_flag,jdbcType = VARCHAR},
+        to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+        #{creater,jdbcType = VARCHAR},
+        #{update_time,jdbcType = VARCHAR},
+        #{updater,jdbcType = VARCHAR},
+        #{delete_time,jdbcType = VARCHAR},
+        #{deleter,jdbcType = VARCHAR}
+        )
+    </insert>
+
+    <update id="update" parameterType="com.fof.init.entity.SysUserInfoEntity">
+        UPDATE SYS_USER_INFO SET
+        <if test="name != null and name != ''">
+            NAME = #{name},
+        </if>
+        <if test="fullname != null and fullname != ''">
+            FULLNAME = #{fullname},
+        </if>
+
+        <if test="username != null and username != ''">
+            USERNAME = #{username},
+        </if>
+        <if test="null != password and password != ''">
+            PASSWORD = #{password},
+        </if>
+        <if test="null != salt and salt != ''">
+            SALT = #{salt},
+        </if>
+        <if test="null != userCode and userCode != ''">
+            USERCODE = #{userCode},
+        </if>
+        <if test="null != delete_flag and delete_flag != ''">
+            DELETE_FLAG = #{delete_flag},
+        </if>
+        <if test="null != deleter and deleter != ''">
+            DELETER = #{deleter},
+        </if>
+        <if test="null != delete_time and delete_time != ''">
+            DELETE_TIME = #{delete_time},
+        </if>
+        <if test="null != create_time and create_time != ''">
+            CREATE_TIME = #{create_time},
+        </if>
+        <if test="null != creater and creater != ''">
+            CREATER = #{creater},
+        </if>
+        <if test="null != updater and updater != ''">
+            UPDATER = #{updater},
+        </if>
+        <if test="deleter!=null and deleter!=''">
+            DELETER=#{deleter},
+        </if>
+        <if test="delete_time!=null and delete_time!=''">
+            DELETE_TIME=#{delete_time},
+        </if>
+        <include refid="update_sql" />
+        WHERE id = #{id}
+    </update>
 
 </mapper>

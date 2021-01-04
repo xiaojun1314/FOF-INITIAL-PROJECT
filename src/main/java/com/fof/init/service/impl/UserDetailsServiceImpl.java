@@ -1,5 +1,6 @@
 package com.fof.init.service.impl;
 
+import com.fof.common.bean.SecurityUserInfo;
 import com.fof.init.dao.UserInfoDao;
 import com.fof.init.entity.SysUserInfoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         System.out.println("userName"+userName);
-        SysUserInfoEntity sysUserInfoEntity = userInfoDao.getByUserName(userName);
+        SecurityUserInfo sysUserInfoEntity = userInfoDao.getByUserName(userName);
+
+        //SecurityUserInfo securityUserInfo=new SecurityUserInfo();
         /**
         System.out.println("username"+username);
         SysUserInfoEntity sysUserInfoEntity=new SysUserInfoEntity();
@@ -38,6 +41,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         GrantedAuthority grantedAuthority1 = new SimpleGrantedAuthority("query_user");
         grantedAuthorities.add(grantedAuthority);
         grantedAuthorities.add(grantedAuthority1);
-        return new User(sysUserInfoEntity.getUserName(),sysUserInfoEntity.getPassWord(), sysUserInfoEntity.isAccountNonExpired(), true, true, true, grantedAuthorities);
+        sysUserInfoEntity.setAuthorities(grantedAuthorities);
+       // return new User(sysUserInfoEntity.getUserName(),sysUserInfoEntity.getPassWord(), true, true, true, true, grantedAuthorities);
+       return  sysUserInfoEntity;
     }
 }

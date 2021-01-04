@@ -2,11 +2,12 @@ package com.fof.init.entity;
 
 import com.fof.common.entity.BaseNoIdEntity;
 import com.fof.common.util.Constants;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -27,32 +28,15 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
     /**密码盐*/
     @Column(name="SALT",columnDefinition="varchar(225)")
     private String salt;
-    /**用户状态*/
-    @Column(name="STATE",columnDefinition="varchar(225)")
-    private String state;
-    /**表示帐号是否未过期*/
-    @Column(name="ACCOUNTNONEXPIRED",columnDefinition="char")
-    private boolean accountNonExpired;
-    /**表示帐号是否未锁定*/
-    @Column(name="ACCOUNTNONLOCKED",columnDefinition="char")
-    private boolean accountNonLocked;
-    /**表示登录凭据是否未过期*/
-    @Column(name="CREDENTIALSNONEXPIRED",columnDefinition="char")
-    private boolean credentialsNonExpired;
-    /**用户可用状态*/
-    @Column(name="ENABLED",columnDefinition="char")
-    private boolean enabled;
+    /**用户编码*/
+    @Column(name="USERCODE",columnDefinition="varchar(225)")
+    private String userCode;
+
     @Transient
-    private String stateText;
-    @Transient
-    private String accountNonExpiredText;
-    @Transient
-    private String accountNonLockedText;
-    @Transient
-    private String credentialsNonExpiredText;
+    private String oldUserCode;
+
     @Transient
     private String oldUserName;
-
     @Transient
     private List<SysRoleInfoEntity> sysRoleInfoList;
 
@@ -100,22 +84,6 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
         this.salt = salt;
     }
 
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public String getStateText() {
-        return stateText;
-    }
-
-    public void setStateText(String stateText) {
-        this.stateText = stateText;
-    }
-
     public String getOldUserName() {
         return oldUserName;
     }
@@ -132,59 +100,19 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
         this.sysRoleInfoList = sysRoleInfoList;
     }
 
-    public boolean isAccountNonExpired() {
-        return accountNonExpired ? true:false;
+    public String getUserCode() {
+        return userCode;
     }
 
-    public void setAccountNonExpired(boolean accountNonExpired) {
-        this.accountNonExpired = accountNonExpired;
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
     }
 
-    public boolean isAccountNonLocked() {
-        return accountNonLocked? true:false;
+    public String getOldUserCode() {
+        return oldUserCode;
     }
 
-    public void setAccountNonLocked(boolean accountNonLocked) {
-        this.accountNonLocked = accountNonLocked;
-    }
-
-    public boolean isCredentialsNonExpired() {
-        return credentialsNonExpired ? true:false;
-    }
-
-    public void setCredentialsNonExpired(boolean credentialsNonExpired) {
-        this.credentialsNonExpired = credentialsNonExpired;
-    }
-
-    public boolean isEnabled() {
-        return enabled ? true:false;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getAccountNonExpiredText() {
-        return accountNonExpiredText;
-    }
-
-    public void setAccountNonExpiredText(String accountNonExpiredText) {
-        this.accountNonExpiredText = accountNonExpiredText;
-    }
-
-    public String getAccountNonLockedText() {
-        return accountNonLockedText;
-    }
-
-    public void setAccountNonLockedText(String accountNonLockedText) {
-        this.accountNonLockedText = accountNonLockedText;
-    }
-
-    public String getCredentialsNonExpiredText() {
-        return credentialsNonExpiredText;
-    }
-
-    public void setCredentialsNonExpiredText(String credentialsNonExpiredText) {
-        this.credentialsNonExpiredText = credentialsNonExpiredText;
+    public void setOldUserCode(String oldUserCode) {
+        this.oldUserCode = oldUserCode;
     }
 }

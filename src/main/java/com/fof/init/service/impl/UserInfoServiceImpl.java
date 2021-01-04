@@ -1,6 +1,7 @@
 package com.fof.init.service.impl;
 
 
+import com.fof.common.bean.SecurityUserInfo;
 import com.fof.init.dao.UserInfoDao;
 import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.service.IUserInfoService;
@@ -18,7 +19,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
 	@Autowired
 	private UserInfoDao userInfoDao;
 
-	public SysUserInfoEntity findByUserName(String userName) {
+	public SecurityUserInfo findByUserName(String userName) {
 		return userInfoDao.getByUserName(userName);
 	}
 
@@ -31,6 +32,21 @@ public class UserInfoServiceImpl implements IUserInfoService {
 
 	public Integer getCount(Map<String, Object> map) {
 		return userInfoDao.getCount(map);
+	}
+
+	@Transactional(value = "transactionManager")
+	public Integer delete(String deleter,String[] id) {
+		return userInfoDao.delete(deleter,id);
+	}
+
+	@Transactional(value = "transactionManager")
+	public Integer insert(SysUserInfoEntity entity) {
+		return userInfoDao.insert(entity);
+	}
+
+	@Transactional(value = "transactionManager")
+	public Integer update(SysUserInfoEntity entity) {
+		return userInfoDao.update(entity);
 	}
 
 	public  String[] initSorter(String sorter) {
