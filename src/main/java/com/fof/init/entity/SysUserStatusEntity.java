@@ -16,16 +16,16 @@ public class SysUserStatusEntity extends BaseNoIdEntity {
 
     /**表示帐号是否未过期*/
     @Column(name="ACCOUNTNONEXPIRED",columnDefinition="char")
-    private boolean accountNonExpired;
+    private boolean accountNonExpired = true;
     /**表示帐号是否未锁定*/
     @Column(name="ACCOUNTNONLOCKED",columnDefinition="char")
-    private boolean accountNonLocked;
+    private boolean accountNonLocked = true;
     /**表示登录凭据是否未过期*/
     @Column(name="CREDENTIALSNONEXPIRED",columnDefinition="char")
-    private boolean credentialsNonExpired;
+    private boolean credentialsNonExpired = true;
     /**用户可用状态*/
     @Column(name="ENABLED",columnDefinition="char")
-    private boolean enabled;
+    private boolean enabled = true;
 
     @OneToOne
     @JoinColumn(name="FOREIGNID",unique=true)

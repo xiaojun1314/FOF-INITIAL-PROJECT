@@ -16,9 +16,18 @@ public interface IUserInfoService {
 
 	public Integer getCount(Map<String,Object> map);
 
-	public Integer delete(String deleter,String[] id);
+	public Integer delete(String deleter,String[] ids);
 
 	public Integer insert(SysUserInfoEntity entity);
 
 	public Integer update(SysUserInfoEntity entity);
+
+	public boolean checkUserName(SysUserInfoEntity entity);
+
+	public SysUserInfoEntity findById(String id);
+
+	public boolean checkUserCode(SysUserInfoEntity entity);
+
+	public Integer resetPassWord(SysUserInfoEntity entity);
+
 }

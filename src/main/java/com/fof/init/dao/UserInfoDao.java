@@ -16,9 +16,18 @@ public interface UserInfoDao {
 
 	 public Integer delete(@Param(value = "deleter") String deleter,@Param(value = "ids") String[] ids);
 
-	public Integer insert(SysUserInfoEntity entity);
+	 public Integer insert(SysUserInfoEntity entity);
 
-	public Integer update(SysUserInfoEntity entity);
+	 public Integer update(SysUserInfoEntity entity);
+
+	 public Integer checkUserName(SysUserInfoEntity entity);
+
+	 public SysUserInfoEntity findById(String id);
+
+	 public Integer checkUserCode(SysUserInfoEntity entity);
+
+	public Integer resetPassWord(SysUserInfoEntity entity);
+
 
 }
 

@@ -3,6 +3,7 @@ package com.fof.common.util;
 import com.alibaba.fastjson.JSONObject;
 import com.fof.Application;
 import org.springframework.boot.SpringApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -10,7 +11,7 @@ import java.util.Set;
 
 public class Test {
     public static void main(String[] args) {
-
+/**
         String str="{userName:'ascend'}";
         //Object data1 = JSONObject.parse(str);
         //System.out.println(data1.toString());
@@ -25,8 +26,8 @@ public class Test {
             System.out.println(key);
             System.out.println(value);
         }
-
-
+*/
+        System.out.println(new BCryptPasswordEncoder().encode("123456"));
     }
 
 }

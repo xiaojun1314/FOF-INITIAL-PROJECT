@@ -26,7 +26,7 @@ public class SystemInitialController {
         // Subject currentUser = SecurityUtils.getSubject();
         SysUserInfoEntity sysUserInfoEntity=new SysUserInfoEntity();
         sysUserInfoEntity.setFullName("fullname");
-        sysUserInfoEntity.setSimpleName("simplename");
+        // sysUserInfoEntity.setSimpleName("simplename");
         sysUserInfoEntity.setUserName("username");
 
         //(SysUserInfoEntity)currentUser.getPrincipal();

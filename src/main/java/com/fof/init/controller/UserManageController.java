@@ -1,27 +1,21 @@
 package com.fof.init.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fof.common.bean.SecurityUserInfo;
-import com.fof.common.util.CommonUtil;
 import com.fof.common.util.Constants;
 import com.fof.common.util.StringHelper;
 import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.service.IUserInfoService;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 @Controller
@@ -30,19 +24,16 @@ public class UserManageController {
     @Autowired
 	private IUserInfoService userInfoService;
 
-    
     @RequestMapping(value="/queryUserList",method= RequestMethod.POST)
-  	public void queryUserList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> params)throws Exception{
+  	public void queryUserList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> searchParams)throws Exception{
     	JSONObject json = new JSONObject();
     	response.setContentType("application/json;charset=UTF-8");
     	try {
-			Map<String, Object> searchParams= CommonUtil.getSearchParameters("search_", params);
-    		int[] pageParams =initPage(StringHelper.null2String(params.get("current")), StringHelper.null2String(params.get("pageSize")));
+    		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
     		searchParams.put("limit", pageParams[1]);
     		searchParams.put("offset", pageParams[0]);
     		searchParams.put("deleteFlag", Constants.DELFLG_N);
-    		System.out.println("sorter"+StringUtils.strip(params.get("sorter").toString(),"{}"));
-    		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringUtils.strip(params.get("sorter").toString(),"{}"));
+    		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
     		json.put("data", list);
     		int count =userInfoService.getCount(searchParams);
         	json.put("IsSuccess", true);
@@ -103,15 +94,8 @@ public class UserManageController {
 		response.setContentType("text/html; charset=UTF-8");
 		try {
 			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-
-			SysUserInfoEntity sysUserInfoEntity=new SysUserInfoEntity();
-
-			String randomSalt = UUID.randomUUID().toString().replace("-", "").toUpperCase();
-			sysUserInfoEntity.setSalt(randomSalt);
-			// String password= new Md5Hash(securityUserInfo.getPassword(),entity.getCredentialsSalt(),3).toString();
-			// sysUserInfoEntity.setPassWord(password);
-			sysUserInfoEntity.setCreater(sysUserInfoEntity.getId());
+			entity.setPassWord(new BCryptPasswordEncoder().encode(entity.getPassWord()));
+			entity.setCreater(securityUserInfo.getId());
 			int flag=userInfoService.insert(entity);
 			if(flag==1) {
 				json.put("IsSuccess", true);
@@ -133,6 +117,124 @@ public class UserManageController {
 			json.put("Message", "保存失败");
 		}
 		return null;
+	}
+
+
+	@RequestMapping(value="/editUserInfo",method= RequestMethod.POST)
+	public void editUserInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		try {
+			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			entity.setUpdater(securityUserInfo.getId());
+			int flag=userInfoService.update(entity);
+			if(flag==1) {
+				json.put("IsSuccess", true);
+				json.put("Message", "更新成功");
+			}else {
+				json.put("IsSuccess", true);
+				json.put("Message", "更新失败");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			json.put("IsSuccess", false);
+			json.put("Message", "更新失败");
+		}
+		try {
+			response.getWriter().write(json.toJSONString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	@RequestMapping(value="/checkUserName",method= RequestMethod.POST)
+	public void checkInfoCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		try {
+			if(null==entity.getId()||(null!=entity.getId()&&!entity.getUserName().equals(entity.getOldUserName()))) {
+				boolean checkResult=userInfoService.checkUserName(entity);
+				if(checkResult) {
+					json.put("IsSuccess",true);
+					json.put("Message", "检查通过");
+				}else {
+					json.put("IsSuccess",false);
+					json.put("Message", "检查不通过");
+				}
+			}else {
+				json.put("IsSuccess",true);
+				json.put("Message", "检查通过");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			json.put("IsSuccess", false);
+			json.put("Message", "检查不通过");
+		}
+		try {
+			response.getWriter().write(json.toJSONString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@RequestMapping(value="/checkUserCode",method= RequestMethod.POST)
+	public void checkUserCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		try {
+			if(null==entity.getId()||(null!=entity.getId()&&!entity.getUserCode().equals(entity.getOldUserCode()))) {
+				boolean checkResult=userInfoService.checkUserCode(entity);
+				if(checkResult) {
+                    json.put("IsSuccess",true);
+                    json.put("Message", "检查通过");
+                }else {
+                    json.put("IsSuccess",false);
+                    json.put("Message", "检查不通过");
+                }
+			}else {
+				json.put("IsSuccess",true);
+				json.put("Message", "检查通过");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			json.put("IsSuccess", false);
+			json.put("Message", "检查不通过");
+		}
+		try {
+			response.getWriter().write(json.toJSONString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**重置用户密码*/
+	@RequestMapping(value="/resetUserInfo",method= RequestMethod.POST)
+	public void resetUserInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		try {
+			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			entity.setUpdater(securityUserInfo.getId());
+			entity.setPassWord(new BCryptPasswordEncoder().encode(entity.getPassWord()));
+			int flag=userInfoService.resetPassWord(entity);
+			if(flag==1) {
+				json.put("IsSuccess", true);
+				json.put("Message", "重置成功");
+			}else {
+				json.put("IsSuccess", true);
+				json.put("Message", "重置失败");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			json.put("IsSuccess", false);
+			json.put("Message", "重置失败");
+		}
+		try {
+			response.getWriter().write(json.toJSONString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public  int[] initPage(String currentPage,String pageSize1) {

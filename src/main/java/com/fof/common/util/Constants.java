@@ -4,10 +4,14 @@ public class Constants {
     //逻辑删除标志【0--未删除，1--已删除】
     public static final String    DELFLG_N  = "0";
 
+    public static final String    IS_STATUS  = "1";
+
+
     public static final String    DELFLG_Y  = "1";
 
     
     public static final String    SUCCESS  = "1";
+
     public static final String    FAIL  = "0";
     /**权限名称*/
     public static enum AuthorityTypeName {

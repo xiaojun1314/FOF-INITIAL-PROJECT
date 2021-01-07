@@ -13,9 +13,6 @@ import java.util.List;
 @Entity
 @Table(name = "SYS_USER_INFO")
 public class SysUserInfoEntity extends BaseNoIdEntity {
-    /**简称*/
-    @Column(name="SIMPLENAME",columnDefinition="varchar(225)")
-    private String simpleName;
     /**全名*/
     @Column(name="FULLNAME",columnDefinition="varchar(225)")
     private String fullName;
@@ -25,32 +22,15 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
     /**密码*/
     @Column(name="PASSWORD",columnDefinition="varchar(225)")
     private String passWord;
-    /**密码盐*/
-    @Column(name="SALT",columnDefinition="varchar(225)")
-    private String salt;
     /**用户编码*/
     @Column(name="USERCODE",columnDefinition="varchar(225)")
     private String userCode;
-
     @Transient
     private String oldUserCode;
-
     @Transient
     private String oldUserName;
     @Transient
     private List<SysRoleInfoEntity> sysRoleInfoList;
-
-    public String getCredentialsSalt(){
-        return this.userName+this.salt;
-    }
-
-    public String getSimpleName() {
-        return simpleName;
-    }
-
-    public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
-    }
 
     public String getFullName() {
         return fullName;
@@ -76,12 +56,20 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
         this.passWord = passWord;
     }
 
-    public String getSalt() {
-        return salt;
+    public String getUserCode() {
+        return userCode;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    public void setUserCode(String userCode) {
+        this.userCode = userCode;
+    }
+
+    public String getOldUserCode() {
+        return oldUserCode;
+    }
+
+    public void setOldUserCode(String oldUserCode) {
+        this.oldUserCode = oldUserCode;
     }
 
     public String getOldUserName() {
@@ -98,21 +86,5 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
 
     public void setSysRoleInfoList(List<SysRoleInfoEntity> sysRoleInfoList) {
         this.sysRoleInfoList = sysRoleInfoList;
-    }
-
-    public String getUserCode() {
-        return userCode;
-    }
-
-    public void setUserCode(String userCode) {
-        this.userCode = userCode;
-    }
-
-    public String getOldUserCode() {
-        return oldUserCode;
-    }
-
-    public void setOldUserCode(String oldUserCode) {
-        this.oldUserCode = oldUserCode;
     }
 }
