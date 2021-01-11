@@ -27,7 +27,7 @@ public class SysUserStatusEntity extends BaseNoIdEntity {
     @Column(name="ENABLED",columnDefinition="char")
     private boolean enabled = true;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="FOREIGNID",unique=true)
     private SysUserInfoEntity sysUserInfoEntity;
 

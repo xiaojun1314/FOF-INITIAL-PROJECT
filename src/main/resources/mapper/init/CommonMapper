@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="COMMON">
+
+    <sql id="update_sql">
+        UPDATE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+
+    <sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+
+    <sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+
+    <sql id="pagination_end">
+        <![CDATA[
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1
+	    ]]>
+    </sql>
+
+</mapper>

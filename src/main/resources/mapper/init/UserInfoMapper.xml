@@ -9,7 +9,7 @@
     </sql>
     <sql id="delete_sql">
 		DELETE_FLAG='1',DELETE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
-    </sql>    
+    </sql>
     <sql id="pagination_start">
 		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
     </sql>

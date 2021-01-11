@@ -26,12 +26,13 @@ public class CommonUtil {
         int pageSize = Integer.parseInt(StringUtils.defaultIfBlank(pageSize1,"10"));
         return new int[] { pageNumber, pageSize };
     }
-    
-	public  static String[] initSorter(String sorter,String param1,String param2) {
-        String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("-")[1].equals("descend")?"DESC":"ASC"),param1);
-        String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("-")[0],param2);
-        return new String[] {sorterRule,sorterField};
-    }
+
+
+	public static String[] initSorter(String sorter) {
+		String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("=")[1].equals("descend")?"DESC":"ASC"),"DESC");
+		String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("=")[0],"CREATE_TIME");
+		return new String[] {sorterRule,sorterField};
+	}
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
 	    Map<Object, Boolean> concurrentHashMap = new ConcurrentHashMap<>();

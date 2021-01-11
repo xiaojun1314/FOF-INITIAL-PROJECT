@@ -29,7 +29,8 @@ public class SysUserInfoEntity extends BaseNoIdEntity {
     private String oldUserCode;
     @Transient
     private String oldUserName;
-    @Transient
+
+    @ManyToMany(mappedBy = "sysUserInfoList")
     private List<SysRoleInfoEntity> sysRoleInfoList;
 
     public String getFullName() {

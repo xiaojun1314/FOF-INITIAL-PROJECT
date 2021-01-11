@@ -2,6 +2,7 @@ package com.fof.init.service.impl;
 
 
 import com.fof.common.bean.SecurityUserInfo;
+import com.fof.common.util.CommonUtil;
 import com.fof.init.dao.UserInfoDao;
 import com.fof.init.dao.UserStatusDao;
 import com.fof.init.entity.SysUserInfoEntity;
@@ -29,7 +30,7 @@ public class UserInfoServiceImpl implements IUserInfoService {
 	}
 
 	public List<SysUserInfoEntity> getAll(Map<String,Object> map,String sorter) {
-		String[] sorterParams =initSorter(sorter);
+		String[] sorterParams = CommonUtil.initSorter(sorter);
 		map.put("sortType", sorterParams[0]);
 		map.put("sortField", sorterParams[1]);
 		return userInfoDao.getAll(map);
@@ -84,11 +85,4 @@ public class UserInfoServiceImpl implements IUserInfoService {
 		return userInfoDao.resetPassWord(entity);
 	}
 
-	public  String[] initSorter(String sorter) {
-		String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("=")[1].equals("descend")?"DESC":"ASC"),"DESC");
-		//String sorterRule ="DESC";
-		//String sorterField ="CREATE_TIME";
-		String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("=")[0],"CREATE_TIME");
-		return new String[] {sorterRule,sorterField};
-	}
 }

@@ -62,26 +62,26 @@ public class UserManageController {
 				String[] ids = idsList.stream().toArray(String[]::new);
 				int flag= userInfoService.delete(securityUserInfo.getId(),ids);
 				if(flag>0) {
-					json.put("success", true);
+					json.put("IsSuccess", true);
 					json.put("Message", "删除成功");
 				}else {
-					json.put("success", false);
+					json.put("IsSuccess", false);
 					json.put("Message", "删除失败");
 				}
 			}else {
-				json.put("success", false);
+				json.put("IsSuccess", false);
 				json.put("Message", "删除失败");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			json.put("success", false);
+			json.put("IsSuccess", false);
 			json.put("Message", "删除失败");
 		}
 		try {
 			response.getWriter().write(json.toJSONString());
 		} catch (Exception e) {
 			e.printStackTrace();
-			json.put("success", false);
+			json.put("IsSuccess", false);
 			json.put("Message", "删除失败");
 		}
 		return null;
@@ -118,7 +118,6 @@ public class UserManageController {
 		}
 		return null;
 	}
-
 
 	@RequestMapping(value="/editUserInfo",method= RequestMethod.POST)
 	public void editUserInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
@@ -183,7 +182,7 @@ public class UserManageController {
 		JSONObject json = new JSONObject();
 		response.setContentType("application/json;charset=UTF-8");
 		try {
-			if(null==entity.getId()||(null!=entity.getId()&&!entity.getUserCode().equals(entity.getOldUserCode()))) {
+			if(null==entity.getId()||(null!=entity.getId()&&null==entity.getOldUserCode())||(null!=entity.getId()&&!entity.getUserCode().equals(entity.getOldUserCode()))) {
 				boolean checkResult=userInfoService.checkUserCode(entity);
 				if(checkResult) {
                     json.put("IsSuccess",true);

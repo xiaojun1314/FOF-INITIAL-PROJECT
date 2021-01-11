@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.DictionaryInfoDao">
+	<sql id="all_columns">
+        ID,FOREIGNID,NAME,CODE,BAK1,BAK2,BAK3,BAK4,BAK5,BAK6,BAK7,BAK8,BAK9,BAK10,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+    </sql>
+
+	<sql id="update_sql">
+        UPDATE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+
+	<sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+
+	<sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+
+	<sql id="pagination_end">
+        <![CDATA[
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1
+	    ]]>
+    </sql>
+	<sql id="sql_where">
+		<if test="id != null and id != ''">
+			AND ID=#{id}
+		</if>
+		<if test="foreignId != null and foreignId != ''">
+			AND FOREIGNID=#{foreignId}
+		</if>
+		<if test="name != null and name != ''">
+			AND NAME=#{name}
+		</if>
+		<if test="code != null and code != ''">
+			AND CODE=#{bsn_type_code}
+		</if>
+		<if test="bak1!=null and bak1!=''">
+			AND BAK1=#{bak1}
+		</if>
+		<if test="bak2!=null and bak2!=''">
+			AND BAK2=#{bak2}
+		</if>
+		<if test="bak3!=null and bak3!=''">
+			AND BAK3=#{bak3}
+		</if>
+		<if test="bak4!=null and bak4!=''">
+			AND BAK4=#{bak4}
+		</if>
+		<if test="bak5!=null and bak5!=''">
+			AND BAK6=#{bak6}
+		</if>
+		<if test="bak7!=null and bak7!=''">
+			AND BAK7=#{bak7}
+		</if>
+		<if test="bak8!=null and bak8!=''">
+			AND BAK8=#{bak8}
+		</if>
+		<if test="bak9!=null and bak9!=''">
+			AND BAK9=#{bak9}
+		</if>
+		<if test="bak10!=null and bak10!=''">
+			AND BAK10=#{bak10}
+		</if>
+		<if test="deleteFlag != null and deleteFlag != ''">
+			AND DELETE_FLAG=#{deleteFlag}
+		</if>
+		<if test="createTime != null and createTime != ''">
+			AND CREATE_TIME=#{createTime}
+		</if>
+		<if test="creater != null and creater != ''">
+			AND CREATER=#{creater}
+		</if>
+		<if test="updateTime != null and updateTime != ''">
+			AND UPDATE_TIME=#{updateTime}
+		</if>
+		<if test="updater != null and updater != ''">
+			AND UPDATER=#{updater}
+		</if>
+		<if test="deleteTime != null and deleteTime != ''">
+			AND DELETE_TIME=#{deleteTime}
+		</if>
+		<if test="deleter != null and deleter != ''">
+			AND DELETER=#{deleter}
+		</if>
+
+	</sql>
+    <!-- 查询所有数据 -->
+  	<select id="getAll" resultType="com.fof.init.entity.SysDictionaryInfoEntity" parameterType="java.util.HashMap">
+		<if test="limit!=null and limit!=''">
+			<if test="limit>=0">
+				<include refid="pagination_start" />
+			</if>
+		</if>
+	    SELECT * FROM V_SYS_DICTIONARY_INFO WHERE 1=1
+		<include refid="sql_where" />
+        <if test="sortField != null and sortField != ''">
+  		 ORDER BY ${sortField}
+  		</if>
+  		<if test="sortType != null and sortType != ''">
+  		  ${sortType},ID  DESC
+  		</if>
+		<if test="limit!=null and limit!=''">
+			<if test="limit>=0">
+				<include refid="pagination_end" />
+			</if>
+		</if>
+  	</select>
+  	
+  	<select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  		select COUNT(*) from V_SYS_DICTIONARY_INFO  where 1=1
+		<include refid="sql_where" />
+  </select>
+
+	<!-- 根据主键查询数据 -->
+	<select id="findById" resultType="com.fof.init.entity.SysDictionaryInfoEntity" parameterType="java.lang.String">
+		SELECT * FROM V_SYS_DICTIONARY_INFO WHERE 1=1 AND DELETE_FLAG='0' AND ID = #{id}
+    </select>
+
+    <select id="checkCode" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  	      SELECT COUNT(1) FROM SYS_DICTIONARY_INFO WHERE 1=1 AND DELETE_FLAG='0' AND  FOREIGNID='${foreignId}' and  CODE='${code}'
+  	</select>
+
+  	 <insert id="insert" parameterType="com.fof.init.entity.SysDictionaryInfoEntity" >
+    	<!--获取最新更新的主键-->
+    	<selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+          select lower(sys_guid()) as GUID from dual
+        </selectKey>
+        INSERT INTO SYS_DICTIONARY_INFO (<include refid="all_columns" />)
+        VALUES (
+            #{id,jdbcType = VARCHAR},
+            #{foreignId,jdbcType = VARCHAR},
+		    #{name,jdbcType = VARCHAR},
+            #{code,jdbcType = VARCHAR},
+		    #{bak1,jdbcType = VARCHAR},
+		    #{bak2,jdbcType = VARCHAR},
+		    #{bak3,jdbcType = VARCHAR},
+		    #{bak4,jdbcType = VARCHAR},
+		    #{bak5,jdbcType = VARCHAR},
+		    #{bak6,jdbcType = VARCHAR},
+		    #{bak7,jdbcType = VARCHAR},
+		    #{bak8,jdbcType = VARCHAR},
+		    #{bak9,jdbcType = VARCHAR},
+		    #{bak10,jdbcType = VARCHAR},
+		    #{delete_flag,jdbcType = VARCHAR},
+		    to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+		    #{creater,jdbcType = VARCHAR},
+		    #{update_time,jdbcType = VARCHAR},
+		    #{updater,jdbcType = VARCHAR},
+		    #{delete_time,jdbcType = VARCHAR},
+		    #{deleter,jdbcType = VARCHAR}
+        )
+    </insert>
+    
+    <!-- 修改数据 -->
+    <update id="update" parameterType="com.fof.init.entity.SysDictionaryInfoEntity">
+        UPDATE SYS_DICTIONARY_INFO SET
+  		<if test="foreignId != null and foreignId != ''">
+			FOREIGNID=#{foreignId},
+  		</if> 		
+  		<if test="code != null and code != ''">
+  			CODE=#{code},
+  		</if>  	
+   		<if test="name != null and name != ''">
+			NAME=#{name},
+  		</if>
+  		<if test="bak1 != null and bak1 != ''">
+  			BAK1=#{bak1},
+  		</if>  	
+  		 <if test="bak2 != null and bak2 != ''">
+  			BAK2=#{bak2},
+  		</if>
+  		<if test="bak3 != null and bak3 != ''">
+  			BAK3=#{bak3},
+  		</if>  		
+  		<if test="bak4 != null and bak4 != ''">
+  			BAK4=#{bak4},
+  		</if>  		
+  		<if test="bak5 != null and bak5 != ''">
+			BAK5=#{bak5},
+  		</if>
+		<if test="bak6 != null and bak6 != ''">
+			BAK6=#{bak6},
+		</if>
+   		<if test="bak7 !=null and bak7 != ''">
+  			BAK7=#{bak7},
+  		</if> 		
+    	<if test="bak8 != null and bak8 != ''">
+  			BAK8=#{bak8},
+  		</if>
+  		 <if test="bak9 != null and bak9 != ''">
+  			and BAK9=#{bak9},
+  		</if>
+   		<if test="bak10 != null and bak10 != ''">
+  			BAK10=#{bak10},
+  		</if>
+		<if test="delete_flag != null and delete_flag != ''">
+			DELETE_FLAG = #{delete_flag},
+		</if>
+		<if test="create_time != null and create_time != ''">
+			CREATE_TIME = #{create_time},
+		</if>
+		<if test="creater != null and creater != ''">
+			CREATER = #{creater},
+		</if>
+		<if test="delete_time != null and delete_time != ''">
+			DELETE_TIME = #{delete_time},
+		</if>
+		<if test="deleter != null and deleter != ''">
+			DELETER = #{deleter},
+		</if>
+		<if test="updater != null and updater != ''">
+			UPDATER = #{updater},
+		</if>
+		<include refid="update_sql" />
+        WHERE ID = #{id}
+    </update>
+
+    <update id="delete" >
+       UPDATE SYS_DICTIONARY_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
+        WHERE ID IN
+		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+    </update>
+
+	<update id="deleteByForeignId" >
+		UPDATE SYS_DICTIONARY_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
+		WHERE FOREIGNID IN
+		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
+			#{item,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+</mapper>

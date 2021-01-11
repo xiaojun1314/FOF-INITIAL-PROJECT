@@ -3,6 +3,9 @@ package com.fof.init.dao;
 import com.fof.common.bean.SecurityUserInfo;
 import com.fof.init.entity.SysUserInfoEntity;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.repository.PagingAndSortingRepository;
+
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +29,7 @@ public interface UserInfoDao {
 
 	 public Integer checkUserCode(SysUserInfoEntity entity);
 
-	public Integer resetPassWord(SysUserInfoEntity entity);
+	 public Integer resetPassWord(SysUserInfoEntity entity);
 
 
 }

@@ -2,10 +2,7 @@ package com.fof.init.entity;
 
 import com.fof.common.entity.BaseNoIdEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -26,10 +23,14 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
     /**角色状态*/
     @Column(name="STATE",columnDefinition="varchar(225)")
     private String state;
+
+    @ManyToMany
+    @JoinTable(name = "SYS_ROLE_USER",joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<SysUserInfoEntity> sysUserInfoList;
+
+
     @Transient
     private String stateText;
-    @Transient
-    private List<SysUserInfoEntity> sysUserInfoList;
 
     public String getName() {
         return name;
