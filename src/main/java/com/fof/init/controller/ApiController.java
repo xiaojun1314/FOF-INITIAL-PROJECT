@@ -43,6 +43,23 @@ public class ApiController {
         map22.put("icon", "table");
         map22.put("component", "./systemManage/userInfoList");
         list22.add(map22);
+        Map<String,Object> map33=new HashMap<String,Object>();
+        map33.put("path", "/systemManage/dictionaryTypeList");
+        map33.put("name", "dictionaryTypeList");
+        map33.put("icon", "table");
+        map33.put("component", "./systemManage/dictionaryTypeList");
+
+        list22.add(map33);
+
+
+        Map<String,Object> map44=new HashMap<String,Object>();
+        map44.put("path", "/systemManage/dictionaryInfoList");
+        map44.put("name", "dictionaryInfoList");
+        map44.put("hideInMenu", true);
+        map44.put("component", "./systemManage/dictionaryInfoList");
+
+        list22.add(map44);
+
         map2.put("routes",list22);
         mapList.add(map2);
 
@@ -54,6 +71,14 @@ public class ApiController {
         mapList.add(map3);
         // String jsonArray = JSONArray.toJSONString(mapList);
         // jsonArray=jsonArray.substring(1, jsonArray.length()-1);
+
+
+        Map<String,Object> map4=new HashMap<String,Object>();
+        map3.put("path", "/list");
+        map3.put("name", "list.table-list");
+        map3.put("icon", "smile");
+        map3.put("component", "./ListTableList");
+        mapList.add(map3);
         
         String st1="[{path: '/welcome',name: 'welcome',icon: 'smile',component: './welcome'}]";
 

@@ -33,7 +33,7 @@
 			AND NAME=#{name}
 		</if>
 		<if test="code != null and code != ''">
-			AND CODE=#{bsn_type_code}
+			AND CODE=#{code}
 		</if>
 		<if test="bak1!=null and bak1!=''">
 			AND BAK1=#{bak1}
@@ -62,23 +62,23 @@
 		<if test="bak10!=null and bak10!=''">
 			AND BAK10=#{bak10}
 		</if>
-		<if test="deleteFlag != null and deleteFlag != ''">
-			AND DELETE_FLAG=#{deleteFlag}
+		<if test="delete_flag != null and delete_flag != ''">
+			AND DELETE_FLAG=#{delete_flag}
 		</if>
-		<if test="createTime != null and createTime != ''">
-			AND CREATE_TIME=#{createTime}
+		<if test="create_time != null and create_time != ''">
+			AND CREATE_TIME=#{create_time}
 		</if>
 		<if test="creater != null and creater != ''">
 			AND CREATER=#{creater}
 		</if>
-		<if test="updateTime != null and updateTime != ''">
-			AND UPDATE_TIME=#{updateTime}
+		<if test="update_time != null and update_time != ''">
+			AND UPDATE_TIME=#{update_time}
 		</if>
 		<if test="updater != null and updater != ''">
 			AND UPDATER=#{updater}
 		</if>
-		<if test="deleteTime != null and deleteTime != ''">
-			AND DELETE_TIME=#{deleteTime}
+		<if test="delete_time != null and delete_time != ''">
+			AND DELETE_TIME=#{delete_time}
 		</if>
 		<if test="deleter != null and deleter != ''">
 			AND DELETER=#{deleter}

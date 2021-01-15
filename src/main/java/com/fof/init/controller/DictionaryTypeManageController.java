@@ -36,22 +36,22 @@ public class DictionaryTypeManageController {
 			int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
 		    searchParams.put("limit", pageParams[1]);
 		    searchParams.put("offset", pageParams[0]);
-		    searchParams.put("deleteFlag", Constants.DELFLG_N);
-		    List<SysDictionaryTypeEntity>  list =dictionaryTypeService.getAll(searchParams, StringHelper.null2String(searchParams.get("sorter")));
+		    searchParams.put("delete_flag", Constants.DELFLG_N);
+		    List<SysDictionaryTypeEntity>  list =dictionaryTypeService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
 			json.put("data", list);
 		    int count =dictionaryTypeService.getCount(searchParams);
 			json.put("IsSuccess", true);
 			json.put("total", count);
 			json.put("Message", "查询成功");
 		} catch (Exception e) {
+			e.printStackTrace();
 		    json.put("IsSuccess", false);
 		    json.put("Message", "查询失败");
        }
        try {
     	    response.getWriter().write(json.toJSONString());
        } catch (Exception e) {
-    	    json.put("IsSuccess", false);
-    	    json.put("Message", "查询失败");
+		    e.printStackTrace();
        }    
       	return null;
   	}

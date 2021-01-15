@@ -55,6 +55,9 @@ public class SysDictionaryInfoEntity extends BaseNoIdEntity {
 	@Transient
 	private String  typeCode;
 
+	@Transient
+	private String  foreignId;
+
 
 	public String getCode() {
 		return code;
@@ -168,4 +171,11 @@ public class SysDictionaryInfoEntity extends BaseNoIdEntity {
 		this.typeCode = typeCode;
 	}
 
+	public String getForeignId() {
+		return foreignId;
+	}
+
+	public void setForeignId(String foreignId) {
+		this.foreignId = foreignId;
+	}
 }

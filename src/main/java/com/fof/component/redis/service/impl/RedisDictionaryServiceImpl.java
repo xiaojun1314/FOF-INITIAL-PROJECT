@@ -36,13 +36,11 @@ public class RedisDictionaryServiceImpl implements IRedisDictionaryService {
 		searchParams.put("delete_flag", Constants.DELFLG_N);
 		/**业务字典类型集合*/	 
 		List<SysDictionaryTypeEntity> dictionaryTypelist=dictionaryTypeDao.getAll(searchParams);
-		
 		/**需要数据缓存*/
 		if(!CollectionUtils.isEmpty(dictionaryTypelist)) {
 			Map<String,Object> cacheMap=new HashMap<String,Object>();
 			for (SysDictionaryTypeEntity sysDictionaryTypeEntity : dictionaryTypelist) {
 				searchParams.put("foreignId", sysDictionaryTypeEntity.getId());
-				
 				List<SysDictionaryInfoEntity> dictionaryInfoList=dictionaryInfoDao.getAll(searchParams);
 				List<Code> codeList=infoTranCode(dictionaryInfoList);
 				cacheMap.put(sysDictionaryTypeEntity.getCode(), codeList);

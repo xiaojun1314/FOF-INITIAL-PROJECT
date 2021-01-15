@@ -32,7 +32,7 @@ public class UserManageController {
     		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
     		searchParams.put("limit", pageParams[1]);
     		searchParams.put("offset", pageParams[0]);
-    		searchParams.put("deleteFlag", Constants.DELFLG_N);
+    		searchParams.put("delete_flag", Constants.DELFLG_N);
     		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
     		json.put("data", list);
     		int count =userInfoService.getCount(searchParams);
@@ -81,8 +81,6 @@ public class UserManageController {
 			response.getWriter().write(json.toJSONString());
 		} catch (Exception e) {
 			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "删除失败");
 		}
 		return null;
 	}
@@ -113,8 +111,6 @@ public class UserManageController {
 			response.getWriter().write(json.toJSONString());
 		} catch (Exception e) {
 			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "保存失败");
 		}
 		return null;
 	}
