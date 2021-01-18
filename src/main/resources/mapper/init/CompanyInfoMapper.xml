@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.CompanyInfoDao">
+     <sql id="all_columns">
+        ID,NAME,CODE,DESCRIPTION,ORDER_NO,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+    </sql> 
+    <sql id="update_sql">
+		UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+    <sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+    <sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+    <sql id="pagination_end">
+        <![CDATA[
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1
+	    ]]>
+    </sql>
+    <sql id="sql_where">
+        <if test="id != null and id != ''">
+            AND ID=#{id}
+        </if>
+        <if test="name != null and name != ''">
+            AND NAME=#{name}
+        </if>
+        <if test="code != null and code != ''">
+            AND CODE=#{code}
+        </if>
+        <if test="description != null and description != ''">
+            AND DESCRIPTION=#{description}
+        </if>
+        <if test="order_no != null and order_no != ''">
+            AND ORDER_NO=#{order_no}
+        </if>
+        <if test="delete_flag != null and delete_flag != ''">
+            AND DELETE_FLAG=#{delete_flag}
+        </if>
+        <if test="create_time != null and create_time != ''">
+            AND CREATE_TIME=#{create_time}
+        </if>
+        <if test="creater != null and creater != ''">
+            AND CREATER=#{creater}
+        </if>
+        <if test="update_time != null and update_time != ''">
+            AND UPDATE_TIME=#{update_time}
+        </if>
+        <if test="updater != null and updater != ''">
+            AND UPDATER=#{updater}
+        </if>
+        <if test="delete_time != null and delete_time != ''">
+            AND DELETE_TIME=#{delete_time}
+        </if>
+        <if test="deleter != null and deleter != ''">
+            AND DELETER=#{deleter}
+        </if>
+    </sql>
+
+    <select id="getAll" resultType="com.fof.init.entity.SysCompanyEntity" parameterType="java.util.HashMap">
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_start" />
+            </if>
+        </if>
+        SELECT * FROM SYS_COMPANY_INFO where 1=1
+        <include refid="sql_where" />
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField}
+        </if>
+        <if test="sortType != null and sortType != ''">
+            ${sortType},ID  DESC
+        </if>
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_end" />
+            </if>
+        </if>
+    </select>
+
+    <select id="findById"  resultType="com.fof.init.entity.SysCompanyEntity" parameterType="java.lang.String">
+   	  	SELECT * from SYS_COMPANY_INFO where  1=1 and DELETE_FLAG='0' and id =#{id}
+  	</select>
+</mapper>

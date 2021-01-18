@@ -41,6 +41,7 @@ public class RoleManageController {
     
     // @Autowired
 	// private IRoleAndUserService roleAndUserService;
+
 	@Resource
 	private CodeTableUtil codeTableUtil;
 
@@ -52,12 +53,11 @@ public class RoleManageController {
 			int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
 			searchParams.put("limit", pageParams[1]);
 			searchParams.put("offset", pageParams[0]);
-			searchParams.put("deleteFlag", Constants.DELFLG_N);
-    		List<SysRoleInfoEntity>  list =roleInfoService.getAll(searchParams, StringHelper.null2String(searchParams.get("sorter")));
-			json.put("data", list);
+			searchParams.put("delete_flag", Constants.DELFLG_N);
+    		List<SysRoleInfoEntity>  data =roleInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
+            initCodeText(data);
     		int count =roleInfoService.getCount(searchParams);
-    		initCodeText(list);	
-        	json.put("list", list);
+        	json.put("data", data);
 			json.put("IsSuccess", true);
 			json.put("total", count);
 			json.put("Message", "查询成功");
@@ -110,7 +110,7 @@ public class RoleManageController {
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
     	try {
-			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+            SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     		entity.setCreater(securityUserInfo.getId());
       	    int flag=roleInfoService.insert(entity);
      	    if(flag==1) {

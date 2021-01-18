@@ -43,6 +43,16 @@ public class ApiController {
         map22.put("icon", "table");
         map22.put("component", "./systemManage/userInfoList");
         list22.add(map22);
+
+        Map<String,Object> map222=new HashMap<String,Object>();
+        map222.put("path", "/systemManage/roleInfoList");
+        map222.put("name", "roleInfoList");
+        map222.put("icon", "table");
+        map222.put("component", "./systemManage/roleInfoList");
+        list22.add(map222);
+
+
+
         Map<String,Object> map33=new HashMap<String,Object>();
         map33.put("path", "/systemManage/dictionaryTypeList");
         map33.put("name", "dictionaryTypeList");
@@ -79,6 +89,23 @@ public class ApiController {
         map3.put("icon", "smile");
         map3.put("component", "./ListTableList");
         mapList.add(map3);
+
+
+        Map<String,Object> map5=new HashMap<String,Object>();
+        map5.put("path", "/orgcenter");
+        map5.put("name", "orgcenter");
+        map5.put("icon", "dashboard");
+
+        List<Map<String,Object>> list55= new ArrayList<Map<String,Object>>();
+        Map<String,Object> map55=new HashMap<String,Object>();
+        map55.put("path", "/orgcenter/orgstructInfoList");
+        map55.put("name", "orgstructInfoList");
+        map55.put("icon", "dashboard");
+        map55.put("component", "./orgcenter/orgstructInfoList");
+        list55.add(map55);
+
+        map5.put("routes",list55);
+        mapList.add(map5);
         
         String st1="[{path: '/welcome',name: 'welcome',icon: 'smile',component: './welcome'}]";
 
