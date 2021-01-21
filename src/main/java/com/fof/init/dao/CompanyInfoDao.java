@@ -11,4 +11,10 @@ public interface CompanyInfoDao {
 
 	public SysCompanyEntity findById(String id);
 
+	public Integer insert(SysCompanyEntity entity);
+
+	public Integer update(SysCompanyEntity entity);
+
+	public Integer checkCode(SysCompanyEntity entity);
+
 }

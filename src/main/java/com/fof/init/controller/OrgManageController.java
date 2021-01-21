@@ -126,10 +126,267 @@ public class OrgManageController {
                 json.put("entity",entity);
                 json.put("type","2");
             }
-
         }
-
         response.getWriter().write(json.toJSONString());
         return null;
     }
+
+    @RequestMapping(value="/saveCompanyInfo",method=RequestMethod.POST)
+    public String saveCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity){
+        JSONObject json = new JSONObject();
+        response.setContentType("text/html; charset=UTF-8");
+        try {
+
+            int flag=companyInfoService.insert(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息失败");
+            }
+        }catch (Exception e) {
+            json.put("IsSuccess", false);
+            json.put("Message", "保存信息失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/editCompanyInfo",method=RequestMethod.POST)
+    public String editCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            int flag=companyInfoService.update(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新失败");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "更新失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/checkCompanyCode",method=RequestMethod.POST)
+    public String checkCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
+                boolean checkResult=companyInfoService.checkCode(entity);
+                if(checkResult) {
+                    json.put("IsSuccess",true);
+                    json.put("Message", "检查通过");
+                }else {
+                    json.put("IsSuccess",false);
+                    json.put("Message", "检查不通过");
+                }
+            }else {
+                json.put("IsSuccess",true);
+                json.put("Message", "检查通过");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        return null;
+    }
+
+    /**添加分部公司信息*/
+    @RequestMapping(value="/saveSubCompanyInfo",method=RequestMethod.POST)
+    public String saveSubCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity){
+        JSONObject json = new JSONObject();
+        response.setContentType("text/html; charset=UTF-8");
+        try {
+            int flag=subCompanyInfoService.insert(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息失败");
+            }
+        }catch (Exception e) {
+            json.put("IsSuccess", false);
+            json.put("Message", "保存信息失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/editSubCompanyInfo",method=RequestMethod.POST)
+    public String editSubCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+
+            int flag=subCompanyInfoService.update(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新信息成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新信息失败");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "更新信息失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/checkSubCompanyCode",method=RequestMethod.POST)
+    public String checkSubCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
+                boolean checkResult=subCompanyInfoService.checkCode(entity);
+                if(checkResult) {
+                    json.put("IsSuccess",true);
+                    json.put("Message", "检查通过");
+                }else {
+                    json.put("IsSuccess",false);
+                    json.put("Message", "检查不通过");
+                }
+            }else {
+                json.put("IsSuccess",true);
+                json.put("Message", "检查通过");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        return null;
+    }
+
+
+    /**添加分部公司信息*/
+    @RequestMapping(value="/saveDepartmentInfo",method=RequestMethod.POST)
+    public String saveDepartmentInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity){
+        JSONObject json = new JSONObject();
+        response.setContentType("text/html; charset=UTF-8");
+        try {
+
+            int flag=departmentInfoService.insert(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "保存信息失败");
+            }
+        }catch (Exception e) {
+            json.put("IsSuccess", false);
+            json.put("Message", "保存信息失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/editDepartmentInfo",method=RequestMethod.POST)
+    public String editDepartmentInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            int flag=departmentInfoService.update(entity);
+            if(flag==1) {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新信息成功");
+            }else {
+                json.put("IsSuccess", true);
+                json.put("Message", "更新信息失败");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "更新信息失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/checkDepartmentCode",method=RequestMethod.POST)
+    public String checkDepartmentCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
+                boolean checkResult=departmentInfoService.checkCode(entity);
+                if(checkResult) {
+                    json.put("IsSuccess",true);
+                    json.put("Message", "检查通过");
+                }else {
+                    json.put("IsSuccess",false);
+                    json.put("Message", "检查不通过");
+                }
+            }else {
+                json.put("IsSuccess",true);
+                json.put("Message", "检查通过");
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "检查不通过");
+        }
+        return null;
+    }
+
 }

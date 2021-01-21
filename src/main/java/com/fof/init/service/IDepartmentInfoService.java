@@ -15,4 +15,10 @@ public interface IDepartmentInfoService {
     List<SysDepartmentEntity> getAll(Map<String,Object> searchParams, String sorter);
 
     public SysDepartmentEntity findById(String id);
+
+    public Integer insert(SysDepartmentEntity entity);
+
+    public Integer update(SysDepartmentEntity entity);
+
+    public boolean checkCode(SysDepartmentEntity entity);
 }

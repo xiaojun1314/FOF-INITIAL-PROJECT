@@ -2,6 +2,7 @@ package com.fof.init.service.impl;
 
 import com.fof.common.util.CommonUtil;
 import com.fof.init.dao.SubCompanyInfoDao;
+import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
 import com.fof.init.service.ISubCompanyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,5 +29,21 @@ public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
     }
     public SysSubCompanyEntity findById(String id) {
         return subCompanyInfoDao.findById(id);
+    }
+
+    public Integer insert(SysSubCompanyEntity entity) {
+        return subCompanyInfoDao.insert(entity);
+    }
+
+    public Integer update(SysSubCompanyEntity entity) {
+        return subCompanyInfoDao.update(entity);
+    }
+
+    public boolean  checkCode(SysSubCompanyEntity entity) {
+        if(subCompanyInfoDao.checkCode(entity)>0) {
+            return false;
+        }else {
+            return true;
+        }
     }
 }

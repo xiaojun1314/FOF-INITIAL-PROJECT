@@ -16,4 +16,10 @@ public interface DepartmentInfoDao {
     public List<SysDepartmentEntity> getAll(Map<String,Object> map);
 
     public SysDepartmentEntity findById(String id);
+
+    Integer insert(SysDepartmentEntity entity);
+
+    Integer update(SysDepartmentEntity entity);
+
+    Integer checkCode(SysDepartmentEntity entity);
 }

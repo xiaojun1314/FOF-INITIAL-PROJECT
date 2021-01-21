@@ -34,4 +34,21 @@ public class DepartmentInfoServiceImpl implements IDepartmentInfoService {
     }
 
 
+
+    public Integer insert(SysDepartmentEntity entity) {
+        return departmentInfoDao.insert(entity);
+    }
+
+    public Integer update(SysDepartmentEntity entity) {
+        return departmentInfoDao.update(entity);
+    }
+
+
+    public boolean  checkCode(SysDepartmentEntity entity) {
+        if(departmentInfoDao.checkCode(entity)>0) {
+            return false;
+        }else {
+            return true;
+        }
+    }
 }

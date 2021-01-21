@@ -15,4 +15,10 @@ public interface ICompanyInfoService {
     List<SysCompanyEntity> getAll(Map<String,Object> searchParams,String sorter);
 
     public SysCompanyEntity findById(String id);
+
+    public Integer insert(SysCompanyEntity entity);
+
+    public boolean  checkCode(SysCompanyEntity entity);
+
+    public Integer update(SysCompanyEntity entity);
 }

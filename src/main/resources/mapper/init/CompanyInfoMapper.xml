@@ -81,4 +81,66 @@
     <select id="findById"  resultType="com.fof.init.entity.SysCompanyEntity" parameterType="java.lang.String">
    	  	SELECT * from SYS_COMPANY_INFO where  1=1 and DELETE_FLAG='0' and id =#{id}
   	</select>
+
+    <insert id="insert" parameterType="com.fof.init.entity.SysCompanyEntity" >
+        <!--获取最新更新的主键-->
+        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+            select lower(sys_guid()) as GUID from dual
+        </selectKey>
+        INSERT INTO SYS_COMPANY_INFO (<include refid="all_columns" />)
+        VALUES (
+        #{id,jdbcType = VARCHAR},
+        #{name,jdbcType = VARCHAR},
+        #{code,jdbcType = VARCHAR},
+        #{description,jdbcType = VARCHAR},
+        #{order_no,jdbcType = VARCHAR},
+        #{delete_flag,jdbcType = VARCHAR},
+        to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+        #{creater,jdbcType = VARCHAR},
+        #{update_time,jdbcType = VARCHAR},
+        #{updater,jdbcType = VARCHAR},
+        #{delete_time,jdbcType = VARCHAR},
+        #{deleter,jdbcType = VARCHAR}
+        )
+    </insert>
+
+    <select id="checkCode" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  	      select count(1) from SYS_COMPANY_INFO where 1=1 and DELETE_FLAG='0' and code='${code}'
+  	</select>
+
+    <update id="update" parameterType="com.fof.init.entity.SysCompanyEntity">
+        UPDATE SYS_COMPANY_INFO SET
+        <if test="null != name and name != ''">
+            NAME = #{name},
+        </if>
+        <if test="null != code and code != ''">
+            CODE = #{code},
+        </if>
+        <if test="null != description and description != ''">
+            DESCRIPTION = #{description},
+        </if>
+        <if test="null != order_no and order_no != ''">
+            ORDER_NO = #{order_no},
+        </if>
+        <if test="delete_flag != null and delete_flag != ''">
+            DELETE_FLAG = #{delete_flag},
+        </if>
+        <if test="create_time != null and create_time != ''">
+            CREATE_TIME = #{create_time},
+        </if>
+        <if test="creater != null and creater != ''">
+            CREATER = #{creater},
+        </if>
+        <if test="delete_time != null and delete_time != ''">
+            DELETE_TIME = #{delete_time},
+        </if>
+        <if test="deleter != null and deleter != ''">
+            DELETER = #{deleter},
+        </if>
+        <if test="updater != null and updater != ''">
+            UPDATER = #{updater},
+        </if>
+        <include refid="update_sql" />
+        WHERE id = #{id}
+    </update>
 </mapper>

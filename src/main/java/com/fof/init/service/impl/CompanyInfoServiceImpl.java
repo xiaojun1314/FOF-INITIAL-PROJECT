@@ -6,6 +6,7 @@ import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.service.ICompanyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -31,5 +32,21 @@ public class CompanyInfoServiceImpl implements ICompanyInfoService {
 
     public SysCompanyEntity findById(String id) {
         return companyInfoDao.findById(id);
+    }
+
+    public Integer insert(SysCompanyEntity entity) {
+        return companyInfoDao.insert(entity);
+    }
+
+    public Integer update(SysCompanyEntity entity) {
+        return companyInfoDao.update(entity);
+    }
+
+    public boolean  checkCode(SysCompanyEntity entity) {
+        if(companyInfoDao.checkCode(entity)>0) {
+            return false;
+        }else {
+            return true;
+        }
     }
 }

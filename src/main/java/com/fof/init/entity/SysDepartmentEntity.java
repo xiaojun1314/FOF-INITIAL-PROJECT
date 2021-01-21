@@ -30,7 +30,7 @@ public class SysDepartmentEntity extends BaseNoIdEntity {
 	private String parent_id;
 
     @Transient
-    private String          old_code;
+    private String          oldCode;
 
 	@Transient
 	private String  foreignId;
@@ -53,12 +53,7 @@ public class SysDepartmentEntity extends BaseNoIdEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getOld_code() {
-		return old_code;
-	}
-	public void setOld_code(String old_code) {
-		this.old_code = old_code;
-	}
+
 	public String getOrder_no() {
 		return order_no;
 	}
@@ -70,6 +65,14 @@ public class SysDepartmentEntity extends BaseNoIdEntity {
 	}
 	public void setForeignId(String foreignId) {
 		this.foreignId = foreignId;
+	}
+
+	public String getOldCode() {
+		return oldCode;
+	}
+
+	public void setOldCode(String oldCode) {
+		this.oldCode = oldCode;
 	}
 
 	public String getParent_id() {

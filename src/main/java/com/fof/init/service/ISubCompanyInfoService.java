@@ -16,4 +16,11 @@ public interface ISubCompanyInfoService {
     List<SysSubCompanyEntity> getAll(Map<String,Object> searchParams,String sorter);
 
     public SysSubCompanyEntity findById(String id);
+
+
+    public Integer insert(SysSubCompanyEntity entity);
+
+    public boolean  checkCode(SysSubCompanyEntity entity);
+
+    public Integer update(SysSubCompanyEntity entity);
 }
