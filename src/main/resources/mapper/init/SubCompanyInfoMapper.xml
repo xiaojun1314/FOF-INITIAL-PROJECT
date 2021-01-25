@@ -81,6 +81,11 @@
         </if>
     </select>
 
+    <select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT count(*) FROM SYS_SUBCOMPANY_INFO where 1=1
+        <include refid="sql_where" />
+    </select>
+
     <select id="findById"  resultType="com.fof.init.entity.SysSubCompanyEntity" parameterType="java.lang.String">
         SELECT <include refid="all_columns" />  from SYS_SUBCOMPANY_INFO where  1=1 and DELETE_FLAG='0' and id =#{id}
     </select>

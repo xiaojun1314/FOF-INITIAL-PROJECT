@@ -23,8 +23,11 @@ public class MenuTree {
 
     private String description;
 
-
     private List<MenuTree> children;
+
+    private List<MenuTree> treeData;
+
+    private String icon;
 
     public String getTitle() {
         return title;
@@ -79,5 +82,21 @@ public class MenuTree {
 
     public void setChildren(List<MenuTree> children) {
         this.children = children;
+    }
+
+    public List<MenuTree> getTreeData() {
+        return treeData;
+    }
+
+    public void setTreeData(List<MenuTree> treeData) {
+        this.treeData = treeData;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

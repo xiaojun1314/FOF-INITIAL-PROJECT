@@ -27,6 +27,11 @@ public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
         searchParams.put("sortField", sorterParams[1]);
         return subCompanyInfoDao.getAll(searchParams);
     }
+
+    public Integer getCount(Map<String, Object> map) {
+        return subCompanyInfoDao.getCount(map);
+    }
+
     public SysSubCompanyEntity findById(String id) {
         return subCompanyInfoDao.findById(id);
     }

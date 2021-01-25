@@ -14,6 +14,8 @@ import java.util.Map;
 public interface SubCompanyInfoDao {
     public List<SysSubCompanyEntity> getAll(Map<String,Object> map);
 
+    public Integer getCount(Map<String,Object> map);
+
     public SysSubCompanyEntity findById(String id);
 
     public Integer insert(SysSubCompanyEntity entity);

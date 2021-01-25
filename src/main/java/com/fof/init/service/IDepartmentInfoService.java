@@ -21,4 +21,8 @@ public interface IDepartmentInfoService {
     public Integer update(SysDepartmentEntity entity);
 
     public boolean checkCode(SysDepartmentEntity entity);
+
+    public List<SysDepartmentEntity> getAllDepartPart(Map<String,Object> searchParams,String sorter);
+
+    public Integer getCountDepartPart(Map<String,Object> map);
 }

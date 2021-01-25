@@ -6,6 +6,7 @@ import com.fof.init.entity.SysDepartmentEntity;
 import com.fof.init.service.IDepartmentInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,19 @@ public class DepartmentInfoServiceImpl implements IDepartmentInfoService {
     public Integer update(SysDepartmentEntity entity) {
         return departmentInfoDao.update(entity);
     }
+
+
+    public List<SysDepartmentEntity> getAllDepartPart(Map<String, Object> searchParams,String sorter) {
+        String[] sorterParams = CommonUtil.initSorter(sorter);
+        searchParams.put("sortType", sorterParams[0]);
+        searchParams.put("sortField", sorterParams[1]);
+        return departmentInfoDao.getAllDepartPart(searchParams);
+    }
+
+    public Integer getCountDepartPart(Map<String, Object> map) {
+        return departmentInfoDao.getCountDepartPart(map);
+    }
+
 
 
     public boolean  checkCode(SysDepartmentEntity entity) {

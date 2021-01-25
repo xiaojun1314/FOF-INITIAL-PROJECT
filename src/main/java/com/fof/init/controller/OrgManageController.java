@@ -2,13 +2,17 @@ package com.fof.init.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fof.common.entity.MenuTree;
+import com.fof.common.entity.TreeBreadcrumb;
 import com.fof.common.util.Constants;
+import com.fof.common.util.StringHelper;
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysDepartmentEntity;
+import com.fof.init.entity.SysDictionaryTypeEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
 import com.fof.init.service.ICompanyInfoService;
 import com.fof.init.service.IDepartmentInfoService;
 import com.fof.init.service.ISubCompanyInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,9 +52,15 @@ public class OrgManageController {
         searchParams.put("delete_flag", Constants.DELFLG_N);
         List<SysCompanyEntity> companyList=companyInfoService.getAll(searchParams, "order_no=ascend");
         List<MenuTree> mainTreeList=new ArrayList<MenuTree>();
+        List<MenuTree> rootTreeList=new ArrayList<MenuTree>();
+        MenuTree rootTree=new MenuTree();
+        rootTree.setKey("root");
+        rootTree.setTitle("组织架构");
+        rootTree.setType("-1");
+        rootTree.setIcon("<ClusterOutlined />");
         for(SysCompanyEntity entity:companyList) {
             MenuTree menuTree=new MenuTree();
-            menuTree.setKey(entity.getId()+"|"+"0");
+            menuTree.setKey(entity.getId());
             menuTree.setTitle(entity.getName());
             menuTree.setType("0");
             menuTree.setOrderNo(entity.getOrder_no());
@@ -62,7 +72,7 @@ public class OrgManageController {
             List<MenuTree> childrenTreeList=new ArrayList<MenuTree>();
             for(SysSubCompanyEntity subEntity:subCompanyList) {
                 MenuTree subMenuTree=new MenuTree();
-                subMenuTree.setKey(subEntity.getId()+"|"+"1");
+                subMenuTree.setKey(subEntity.getId());
                 subMenuTree.setTitle(subEntity.getName());
                 subMenuTree.setType("1");
                 searchParams.clear();
@@ -77,7 +87,10 @@ public class OrgManageController {
             menuTree.setChildren(childrenTreeList);
             mainTreeList.add(menuTree);
         }
-        json.put("unitTreeData",mainTreeList);
+        rootTree.setChildren(mainTreeList);
+        rootTreeList.add(rootTree);
+        //rootTree.setChildren(mainTreeList);
+        json.put("unitTreeData",rootTreeList);
         response.getWriter().write(json.toJSONString());
         return null;
     }
@@ -87,7 +100,7 @@ public class OrgManageController {
         List<SysDepartmentEntity>   childrenList= departmentInfoService.getAll(searchParams, "order_no=ascend");
         for(SysDepartmentEntity entity:childrenList) {
             MenuTree menuTree=new MenuTree();
-            menuTree.setKey(entity.getId()+"|"+"2");
+            menuTree.setKey(entity.getId());
             menuTree.setTitle(entity.getName());
             menuTree.setType("2");
             Map<String, Object> childrenParams=new HashMap<String, Object>();
@@ -108,24 +121,37 @@ public class OrgManageController {
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         if(null!=searchParams.get("id")&&!"root".equals(searchParams.get("id"))) {
+            TreeBreadcrumb treeBreadcrumb=new TreeBreadcrumb();
+            treeBreadcrumb.setOneLevel("组织架构");
             /**总部*/
             if(searchParams.get("type").equals("0")) {
                 SysCompanyEntity entity =companyInfoService.findById(searchParams.get("id").toString());
+                treeBreadcrumb.setTwoLevel(entity.getName());
                 json.put("entity",entity);
                 json.put("type","0");
+
             }
             /**分部*/
             if(searchParams.get("type").equals("1")) {
                 SysSubCompanyEntity entity =subCompanyInfoService.findById(searchParams.get("id").toString());
+                treeBreadcrumb.setThreeLevel(entity.getName());
+                SysCompanyEntity sysCompanyEntity=companyInfoService.findById(entity.getForeignId());
+                treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
                 json.put("entity",entity);
                 json.put("type","1");
             }
             /**部门*/
             if(searchParams.get("type").equals("2")) {
                 SysDepartmentEntity entity =departmentInfoService.findById(searchParams.get("id").toString());
+                treeBreadcrumb.setFourLevel(entity.getName());
+                SysSubCompanyEntity sysSubCompanyEntity=subCompanyInfoService.findById(entity.getForeignId());
+                treeBreadcrumb.setThreeLevel(sysSubCompanyEntity.getName());
+                SysCompanyEntity sysCompanyEntity=companyInfoService.findById(sysSubCompanyEntity.getForeignId());
+                treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
                 json.put("entity",entity);
                 json.put("type","2");
             }
+            json.put("treeBreadcrumb",treeBreadcrumb);
         }
         response.getWriter().write(json.toJSONString());
         return null;
@@ -387,6 +413,73 @@ public class OrgManageController {
             json.put("Message", "检查不通过");
         }
         return null;
+    }
+
+
+    @RequestMapping(value="/querySubCompanyList",method=RequestMethod.POST)
+    public String querySubCompanyList(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
+            searchParams.put("limit", pageParams[1]);
+            searchParams.put("offset", pageParams[0]);
+            searchParams.put("delete_flag", Constants.DELFLG_N);
+            List<SysSubCompanyEntity> list =subCompanyInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
+            json.put("data", list);
+            int count =subCompanyInfoService.getCount(searchParams);
+            json.put("IsSuccess", true);
+            json.put("total", count);
+            json.put("Message", "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "查询失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "查询失败");
+        }
+        return null;
+    }
+
+    @RequestMapping(value="/queryDepartPartList",method=RequestMethod.POST)
+    public String queryDepartPartList(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("application/json;charset=UTF-8");
+        try {
+            int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
+            searchParams.put("limit", pageParams[1]);
+            searchParams.put("offset", pageParams[0]);
+            searchParams.put("delete_flag", Constants.DELFLG_N);
+            List<SysDepartmentEntity> list =departmentInfoService.getAllDepartPart(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
+            json.put("data", list);
+            int count =departmentInfoService.getCountDepartPart(searchParams);
+            json.put("IsSuccess", true);
+            json.put("total", count);
+            json.put("Message", "查询成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "查询失败");
+        }
+        try {
+            response.getWriter().write(json.toJSONString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            json.put("IsSuccess", false);
+            json.put("Message", "查询失败");
+        }
+        return null;
+    }
+
+    public  int[] initPage(String currentPage,String pageSize1) {
+        int pageNumber = Integer.parseInt(StringUtils.defaultIfBlank(currentPage,"1"));
+        int pageSize = Integer.parseInt(StringUtils.defaultIfBlank(pageSize1,"10"));
+        return new int[] { pageNumber, pageSize };
     }
 
 }

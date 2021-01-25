@@ -22,4 +22,8 @@ public interface DepartmentInfoDao {
     Integer update(SysDepartmentEntity entity);
 
     Integer checkCode(SysDepartmentEntity entity);
+
+    List<SysDepartmentEntity> getAllDepartPart(Map<String,Object> map);
+
+    Integer getCountDepartPart(Map<String,Object> map);
 }
