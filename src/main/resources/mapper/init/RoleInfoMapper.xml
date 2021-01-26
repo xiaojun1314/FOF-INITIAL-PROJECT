@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.fof.init.dao.RoleInfoDao">
      <sql id="all_columns">
-        ID, NAME,CODE,DESCRIPTION,STATE,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+        ID,FOREIGNID,NAME,CODE,DESCRIPTION,STATE,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
     </sql> 
     <sql id="update_sql">
 		    UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
@@ -21,6 +21,12 @@
     <sql id="sql_where" >
         <if test="id != null and id != ''">
             AND ID=#{id}
+        </if>
+        <if test="foreignIds != null and foreignIds != ''">
+            AND FOREIGNID IN
+            <foreach item="item" index="index" collection="foreignIds.split(',')"  open="(" separator="," close=")">
+                '${item}'
+            </foreach>
         </if>
         <if test="name != null and name != ''">
             AND NAME=#{name}
@@ -93,6 +99,7 @@
         INSERT INTO SYS_ROLE_INFO (<include refid="all_columns" />)
         VALUES (
         #{id,jdbcType = VARCHAR},
+        #{foreignId,jdbcType = VARCHAR},
         #{name,jdbcType = VARCHAR},
         #{code,jdbcType = VARCHAR},
         #{description,jdbcType = VARCHAR},

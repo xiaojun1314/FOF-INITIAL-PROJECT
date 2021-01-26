@@ -10,6 +10,7 @@ import com.fof.component.redis.util.CodeTableUtil;
 import com.fof.init.entity.SysRoleInfoEntity;
 import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.service.IRoleInfoService;
+import com.fof.init.service.ISubCompanyInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +24,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +44,9 @@ public class RoleManageController {
     // @Autowired
 	// private IRoleAndUserService roleAndUserService;
 
+    @Autowired
+    private ISubCompanyInfoService subCompanyInfoService;
+
 	@Resource
 	private CodeTableUtil codeTableUtil;
 
@@ -50,6 +55,18 @@ public class RoleManageController {
     	JSONObject json = new JSONObject();
     	response.setContentType("application/json;charset=UTF-8");
     	try {
+            String type= searchParams.get("type").toString();
+            String selectKey= searchParams.get("selectKey").toString();
+            if(type.equals("0")){
+                Map<String,Object> searchParams1=new HashMap<String,Object>();
+                // 分部外键
+                searchParams1.put("foreignId",selectKey);
+                String ids=subCompanyInfoService.getIdsByForeignId(searchParams1);
+                searchParams.put("foreignIds",ids.equals("")?"-1":ids);
+            }
+            if(type.equals("1")){
+                searchParams.put("foreignIds",selectKey);
+            }
 			int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
 			searchParams.put("limit", pageParams[1]);
 			searchParams.put("offset", pageParams[0]);

@@ -7,7 +7,6 @@ import com.fof.common.util.Constants;
 import com.fof.common.util.StringHelper;
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysDepartmentEntity;
-import com.fof.init.entity.SysDictionaryTypeEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
 import com.fof.init.service.ICompanyInfoService;
 import com.fof.init.service.IDepartmentInfoService;
@@ -45,19 +44,15 @@ public class OrgManageController {
     private IDepartmentInfoService departmentInfoService;
 
     @RequestMapping(value="/queryOrgTreeInfo",method= RequestMethod.POST)
-    public String queryOrgTreeInfo(HttpServletResponse response, HttpServletRequest request)throws Exception{
+    public String queryOrgTreeInfo(HttpServletResponse response, HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
-        Map<String,Object> searchParams=new HashMap<String,Object>();
+        String findType= searchParams.get("findType").toString();
+        System.out.println("findType"+findType);
+        searchParams.clear();
         searchParams.put("delete_flag", Constants.DELFLG_N);
         List<SysCompanyEntity> companyList=companyInfoService.getAll(searchParams, "order_no=ascend");
         List<MenuTree> mainTreeList=new ArrayList<MenuTree>();
-        List<MenuTree> rootTreeList=new ArrayList<MenuTree>();
-        MenuTree rootTree=new MenuTree();
-        rootTree.setKey("root");
-        rootTree.setTitle("组织架构");
-        rootTree.setType("-1");
-        rootTree.setIcon("<ClusterOutlined />");
         for(SysCompanyEntity entity:companyList) {
             MenuTree menuTree=new MenuTree();
             menuTree.setKey(entity.getId());
@@ -78,19 +73,18 @@ public class OrgManageController {
                 searchParams.clear();
                 searchParams.put("parent_id",subEntity.getId());
                 searchParams.put("delete_flag", Constants.DELFLG_N);
-                List<MenuTree> list= getChildrenMenu(searchParams);
-                if(list.size()>0) {
-                    subMenuTree.setChildren(list);
+                if(findType.equals("ALL")){
+                    List<MenuTree> list= getChildrenMenu(searchParams);
+                    if(list.size()>0) {
+                        subMenuTree.setChildren(list);
+                    }
                 }
                 childrenTreeList.add(subMenuTree);
             }
             menuTree.setChildren(childrenTreeList);
             mainTreeList.add(menuTree);
         }
-        rootTree.setChildren(mainTreeList);
-        rootTreeList.add(rootTree);
-        //rootTree.setChildren(mainTreeList);
-        json.put("unitTreeData",rootTreeList);
+        json.put("unitTreeData",mainTreeList);
         response.getWriter().write(json.toJSONString());
         return null;
     }
@@ -129,7 +123,6 @@ public class OrgManageController {
                 treeBreadcrumb.setTwoLevel(entity.getName());
                 json.put("entity",entity);
                 json.put("type","0");
-
             }
             /**分部*/
             if(searchParams.get("type").equals("1")) {
@@ -154,325 +147,6 @@ public class OrgManageController {
             json.put("treeBreadcrumb",treeBreadcrumb);
         }
         response.getWriter().write(json.toJSONString());
-        return null;
-    }
-
-    @RequestMapping(value="/saveCompanyInfo",method=RequestMethod.POST)
-    public String saveCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity){
-        JSONObject json = new JSONObject();
-        response.setContentType("text/html; charset=UTF-8");
-        try {
-
-            int flag=companyInfoService.insert(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息失败");
-            }
-        }catch (Exception e) {
-            json.put("IsSuccess", false);
-            json.put("Message", "保存信息失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/editCompanyInfo",method=RequestMethod.POST)
-    public String editCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            int flag=companyInfoService.update(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新失败");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "更新失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/checkCompanyCode",method=RequestMethod.POST)
-    public String checkCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
-                boolean checkResult=companyInfoService.checkCode(entity);
-                if(checkResult) {
-                    json.put("IsSuccess",true);
-                    json.put("Message", "检查通过");
-                }else {
-                    json.put("IsSuccess",false);
-                    json.put("Message", "检查不通过");
-                }
-            }else {
-                json.put("IsSuccess",true);
-                json.put("Message", "检查通过");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        return null;
-    }
-
-    /**添加分部公司信息*/
-    @RequestMapping(value="/saveSubCompanyInfo",method=RequestMethod.POST)
-    public String saveSubCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity){
-        JSONObject json = new JSONObject();
-        response.setContentType("text/html; charset=UTF-8");
-        try {
-            int flag=subCompanyInfoService.insert(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息失败");
-            }
-        }catch (Exception e) {
-            json.put("IsSuccess", false);
-            json.put("Message", "保存信息失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/editSubCompanyInfo",method=RequestMethod.POST)
-    public String editSubCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-
-            int flag=subCompanyInfoService.update(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新信息成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新信息失败");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "更新信息失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/checkSubCompanyCode",method=RequestMethod.POST)
-    public String checkSubCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysSubCompanyEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
-                boolean checkResult=subCompanyInfoService.checkCode(entity);
-                if(checkResult) {
-                    json.put("IsSuccess",true);
-                    json.put("Message", "检查通过");
-                }else {
-                    json.put("IsSuccess",false);
-                    json.put("Message", "检查不通过");
-                }
-            }else {
-                json.put("IsSuccess",true);
-                json.put("Message", "检查通过");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        return null;
-    }
-
-
-    /**添加分部公司信息*/
-    @RequestMapping(value="/saveDepartmentInfo",method=RequestMethod.POST)
-    public String saveDepartmentInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity){
-        JSONObject json = new JSONObject();
-        response.setContentType("text/html; charset=UTF-8");
-        try {
-
-            int flag=departmentInfoService.insert(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存信息失败");
-            }
-        }catch (Exception e) {
-            json.put("IsSuccess", false);
-            json.put("Message", "保存信息失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/editDepartmentInfo",method=RequestMethod.POST)
-    public String editDepartmentInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            int flag=departmentInfoService.update(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新信息成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新信息失败");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "更新信息失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/checkDepartmentCode",method=RequestMethod.POST)
-    public String checkDepartmentCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysDepartmentEntity entity)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
-                boolean checkResult=departmentInfoService.checkCode(entity);
-                if(checkResult) {
-                    json.put("IsSuccess",true);
-                    json.put("Message", "检查通过");
-                }else {
-                    json.put("IsSuccess",false);
-                    json.put("Message", "检查不通过");
-                }
-            }else {
-                json.put("IsSuccess",true);
-                json.put("Message", "检查通过");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
-        }
-        return null;
-    }
-
-
-    @RequestMapping(value="/querySubCompanyList",method=RequestMethod.POST)
-    public String querySubCompanyList(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
-            searchParams.put("limit", pageParams[1]);
-            searchParams.put("offset", pageParams[0]);
-            searchParams.put("delete_flag", Constants.DELFLG_N);
-            List<SysSubCompanyEntity> list =subCompanyInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
-            json.put("data", list);
-            int count =subCompanyInfoService.getCount(searchParams);
-            json.put("IsSuccess", true);
-            json.put("total", count);
-            json.put("Message", "查询成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "查询失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "查询失败");
-        }
-        return null;
-    }
-
-    @RequestMapping(value="/queryDepartPartList",method=RequestMethod.POST)
-    public String queryDepartPartList(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
-        JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
-            searchParams.put("limit", pageParams[1]);
-            searchParams.put("offset", pageParams[0]);
-            searchParams.put("delete_flag", Constants.DELFLG_N);
-            List<SysDepartmentEntity> list =departmentInfoService.getAllDepartPart(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
-            json.put("data", list);
-            int count =departmentInfoService.getCountDepartPart(searchParams);
-            json.put("IsSuccess", true);
-            json.put("total", count);
-            json.put("Message", "查询成功");
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "查询失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "查询失败");
-        }
         return null;
     }
 

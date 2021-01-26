@@ -5,10 +5,12 @@ import com.fof.init.dao.SubCompanyInfoDao;
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
 import com.fof.init.service.ISubCompanyInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @className: SubCompanyInfoServiceImpl
@@ -42,6 +44,17 @@ public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
 
     public Integer update(SysSubCompanyEntity entity) {
         return subCompanyInfoDao.update(entity);
+    }
+
+
+    public String getIdsByForeignId(Map<String, Object> searchParams) {
+        List<SysSubCompanyEntity>  list= subCompanyInfoDao.getAll(searchParams);
+
+        List<String> idsList = list.stream().map(item -> item.getId()).collect(Collectors.toList());
+
+        String ids= StringUtils.join(idsList, ",");
+
+        return ids;
     }
 
     public boolean  checkCode(SysSubCompanyEntity entity) {

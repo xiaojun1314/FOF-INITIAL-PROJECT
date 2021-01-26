@@ -35,6 +35,10 @@ public class SysSubCompanyEntity extends BaseNoIdEntity {
 	@JoinColumn(name = "FOREIGNID")
 	private List<SysDepartmentEntity> sysDepartmentList = new ArrayList<SysDepartmentEntity>();
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "FOREIGNID")
+	private List<SysRoleInfoEntity> sysRoleInfoList = new ArrayList<SysRoleInfoEntity>();
+
 	public String getName() {
 		return name;
 	}
@@ -81,5 +85,13 @@ public class SysSubCompanyEntity extends BaseNoIdEntity {
 
 	public void setSysDepartmentList(List<SysDepartmentEntity> sysDepartmentList) {
 		this.sysDepartmentList = sysDepartmentList;
+	}
+
+	public List<SysRoleInfoEntity> getSysRoleInfoList() {
+		return sysRoleInfoList;
+	}
+
+	public void setSysRoleInfoList(List<SysRoleInfoEntity> sysRoleInfoList) {
+		this.sysRoleInfoList = sysRoleInfoList;
 	}
 }

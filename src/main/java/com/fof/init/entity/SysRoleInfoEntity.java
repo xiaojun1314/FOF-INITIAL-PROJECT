@@ -30,7 +30,13 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
 
 
     @Transient
+    private String  foreignId;
+
+    @Transient
     private String stateText;
+
+    @Transient
+    private String type;
 
     public String getName() {
         return name;
@@ -86,5 +92,21 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
 
     public void setSysUserInfoList(List<SysUserInfoEntity> sysUserInfoList) {
         this.sysUserInfoList = sysUserInfoList;
+    }
+
+    public String getForeignId() {
+        return foreignId;
+    }
+
+    public void setForeignId(String foreignId) {
+        this.foreignId = foreignId;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

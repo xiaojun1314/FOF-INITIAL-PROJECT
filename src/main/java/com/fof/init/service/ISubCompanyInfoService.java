@@ -16,6 +16,7 @@ public interface ISubCompanyInfoService {
     List<SysSubCompanyEntity> getAll(Map<String,Object> searchParams,String sorter);
 
     public SysSubCompanyEntity findById(String id);
+
     public Integer getCount(Map<String,Object> map);
 
     public Integer insert(SysSubCompanyEntity entity);
@@ -23,4 +24,6 @@ public interface ISubCompanyInfoService {
     public boolean  checkCode(SysSubCompanyEntity entity);
 
     public Integer update(SysSubCompanyEntity entity);
+
+    public String  getIdsByForeignId(Map<String,Object> searchParams);
 }
