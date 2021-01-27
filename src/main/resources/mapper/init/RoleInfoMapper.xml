@@ -70,7 +70,7 @@
                 <include refid="pagination_start" />
             </if>
         </if>
-        SELECT * FROM SYS_ROLE_INFO where 1=1
+        SELECT * FROM V_SYS_ROLE_INFO where 1=1
 
         <include refid="sql_where" />
 
@@ -88,7 +88,7 @@
     </select>
 
     <select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM SYS_ROLE_INFO WHERE 1=1
+        SELECT COUNT(*) FROM V_SYS_ROLE_INFO WHERE 1=1
         <include refid="sql_where" />
     </select>
 

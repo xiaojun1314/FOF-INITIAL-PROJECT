@@ -33,6 +33,9 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
     private String  foreignId;
 
     @Transient
+    private String  subCompanyText;
+
+    @Transient
     private String stateText;
 
     @Transient
@@ -108,5 +111,13 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getSubCompanyText() {
+        return subCompanyText;
+    }
+
+    public void setSubCompanyText(String subCompanyText) {
+        this.subCompanyText = subCompanyText;
     }
 }
