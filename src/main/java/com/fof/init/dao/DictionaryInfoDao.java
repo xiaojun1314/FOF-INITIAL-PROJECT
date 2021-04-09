@@ -21,7 +21,7 @@ public interface DictionaryInfoDao {
 
 	public SysDictionaryInfoEntity findById(String id);
 	
-	public Integer delete(@Param(value = "deleter") String deleter, @Param("idsList") List<String> idsList);
+	public Integer delete(@Param("idList") List<String> idList);
 
-	public Integer deleteByForeignId(@Param(value = "deleter") String deleter, @Param("idsList") List<String> idsList);
+	public Integer deleteByForeignId(@Param("idList") List<String> idList);
 }

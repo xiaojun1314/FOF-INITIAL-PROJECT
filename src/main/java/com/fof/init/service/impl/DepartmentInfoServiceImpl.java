@@ -4,12 +4,15 @@ import com.fof.common.util.CommonUtil;
 import com.fof.init.dao.DepartmentInfoDao;
 import com.fof.init.entity.SysDepartmentEntity;
 import com.fof.init.service.IDepartmentInfoService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @className: DepartmentInfoServiceImpl
@@ -35,15 +38,24 @@ public class DepartmentInfoServiceImpl implements IDepartmentInfoService {
     }
 
 
+    public List<SysDepartmentEntity> findByForeignId(Map<String,Object> searchParams) {
+        return departmentInfoDao.findByForeignId(searchParams);
+    }
 
     public Integer insert(SysDepartmentEntity entity) {
+        entity.setCreater(CommonUtil.getSecurityUserInfo().getId());
         return departmentInfoDao.insert(entity);
     }
 
     public Integer update(SysDepartmentEntity entity) {
+        entity.setUpdater(CommonUtil.getSecurityUserInfo().getId());
         return departmentInfoDao.update(entity);
     }
 
+    @Transactional(value = "transactionManager")
+    public void delete(List<String> idList) {
+        departmentInfoDao.deleteByIdList(idList);
+    }
 
     public List<SysDepartmentEntity> getAllDepartPart(Map<String, Object> searchParams,String sorter) {
         String[] sorterParams = CommonUtil.initSorter(sorter);
@@ -56,8 +68,6 @@ public class DepartmentInfoServiceImpl implements IDepartmentInfoService {
         return departmentInfoDao.getCountDepartPart(map);
     }
 
-
-
     public boolean  checkCode(SysDepartmentEntity entity) {
         if(departmentInfoDao.checkCode(entity)>0) {
             return false;
@@ -65,4 +75,5 @@ public class DepartmentInfoServiceImpl implements IDepartmentInfoService {
             return true;
         }
     }
+
 }

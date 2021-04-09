@@ -16,13 +16,12 @@ public enum ResultCode {
 
     /* 默认失败 */
     COMMON_FAIL(999, "失败",1),
-
+    BIND_ERROR(500300, "参数校验异常：%s",1),
     /* 参数错误：1000～1999 */
     PARAM_NOT_VALID(1001, "参数无效",1),
     PARAM_IS_BLANK(1002, "参数为空",1),
     PARAM_TYPE_ERROR(1003, "参数类型错误",1),
     PARAM_NOT_COMPLETE(1004, "参数缺失",1),
-
     /* 用户错误 */
     USER_NOT_LOGIN(2001, "用户未登录",1),
     USER_ACCOUNT_EXPIRED(2002, "账号已过期",1),
@@ -33,12 +32,13 @@ public enum ResultCode {
     USER_ACCOUNT_NOT_EXIST(2007, "账号不存在",1),
     USER_ACCOUNT_ALREADY_EXIST(2008, "账号已存在",1),
     USER_ACCOUNT_USE_BY_OTHERS(2009, "账号下线",1),
-
     /* 业务错误 */
-    NO_PERMISSION(3001, "没有权限",1);
+    NO_PERMISSION(3001, "没有权限",1),
+    UNKNOWN_ERROR(4000, "未知错误",0),
+    COMMIT_FAIL(4001, "操作失败",0);
     private Integer code;
     private String message;
-    private Integer showType;
+    private Integer showType; //错误显示类型：0；1消息.警告; 2 消息.错误；4通知；9页
 
     ResultCode(Integer code, String message,Integer showType) {
         this.code = code;
@@ -84,4 +84,14 @@ public enum ResultCode {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "ResultCode{" +
+                "code=" + code +
+                ", message='" + message + '\'' +
+                ", showType=" + showType +
+                '}';
+    }
+
 }

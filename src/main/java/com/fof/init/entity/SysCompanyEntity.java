@@ -16,9 +16,11 @@ public class SysCompanyEntity extends BaseNoIdEntity {
     /**公司名称*/
     @Column(name="name",columnDefinition="varchar(225)") 
     private String name;
+
     /**公司编码*/
     @Column(name="code",columnDefinition="varchar(225)") 
     private String code;
+
     /**公司描述*/
     @Column(name="description",columnDefinition="varchar(225)") 
     private String description;
@@ -32,7 +34,7 @@ public class SysCompanyEntity extends BaseNoIdEntity {
 	private List<SysSubCompanyEntity> sysSubCompanyList = new ArrayList<SysSubCompanyEntity>();
 
     @Transient
-    private String          oldCode;
+    private String   oldCode;
 
 	public String getName() {
 		return name;
@@ -52,12 +54,7 @@ public class SysCompanyEntity extends BaseNoIdEntity {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getOrder_no() {
-		return order_no;
-	}
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
-	}
+
 
 	public String getOldCode() {
 		return oldCode;
@@ -73,5 +70,13 @@ public class SysCompanyEntity extends BaseNoIdEntity {
 
 	public void setSysSubCompanyList(List<SysSubCompanyEntity> sysSubCompanyList) {
 		this.sysSubCompanyList = sysSubCompanyList;
+	}
+
+	public String getOrder_no() {
+		return order_no;
+	}
+
+	public void setOrder_no(String order_no) {
+		this.order_no = order_no;
 	}
 }

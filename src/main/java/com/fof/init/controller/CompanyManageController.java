@@ -1,6 +1,9 @@
 package com.fof.init.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fof.common.bean.JsonResult;
+import com.fof.common.util.ResultTool;
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.service.ICompanyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,85 +29,34 @@ public class CompanyManageController {
     private ICompanyInfoService companyInfoService;
 
     @RequestMapping(value="/saveCompanyInfo",method= RequestMethod.POST)
-    public String saveCompanyInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysCompanyEntity entity){
+    public void saveCompanyInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysCompanyEntity entity) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
-        try {
-            int flag=companyInfoService.insert(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "保存失败");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "保存失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        companyInfoService.insert(entity);
+        JsonResult result = ResultTool.success(json);
+        response.getWriter().write(JSON.toJSONString(result));
     }
 
     @RequestMapping(value="/editCompanyInfo",method=RequestMethod.POST)
-    public String editCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
+    public void editCompanyInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
         JSONObject json = new JSONObject();
-        response.setContentType("application/json;charset=UTF-8");
-        try {
-            int flag=companyInfoService.update(entity);
-            if(flag==1) {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新成功");
-            }else {
-                json.put("IsSuccess", true);
-                json.put("Message", "更新失败");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "更新失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        response.setContentType("text/html; charset=UTF-8");
+        companyInfoService.update(entity);
+        JsonResult result = ResultTool.success(json);
+        response.getWriter().write(JSON.toJSONString(result));
     }
 
     @RequestMapping(value="/checkCompanyCode",method=RequestMethod.POST)
-    public String checkCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
+    public void checkCompanyCode(HttpServletResponse response,HttpServletRequest request,@RequestBody SysCompanyEntity entity)throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
-        try {
-            if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
-                boolean checkResult=companyInfoService.checkCode(entity);
-                if(checkResult) {
-                    json.put("IsSuccess",true);
-                    json.put("Message", "检查通过");
-                }else {
-                    json.put("IsSuccess",false);
-                    json.put("Message", "检查不通过");
-                }
-            }else {
-                json.put("IsSuccess",true);
-                json.put("Message", "检查通过");
-            }
-        }catch (Exception e) {
-            e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "检查不通过");
+        if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
+            boolean checkResult=companyInfoService.checkCode(entity);
+            json.put("checkResult", checkResult);
+        }else{
+            json.put("checkResult", true);
         }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
+        JsonResult result = ResultTool.success(json);
+        response.getWriter().write(JSON.toJSONString(result));
     }
 }

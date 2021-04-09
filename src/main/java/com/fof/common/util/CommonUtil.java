@@ -1,7 +1,9 @@
 package com.fof.common.util;
 
 
+import com.fof.common.bean.SecurityUserInfo;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +29,6 @@ public class CommonUtil {
         return new int[] { pageNumber, pageSize };
     }
 
-
 	public static String[] initSorter(String sorter) {
 		String sorterRule = StringUtils.defaultIfBlank(sorter.equals("")?"":(sorter.split("=")[1].equals("descend")?"DESC":"ASC"),"DESC");
 		String sorterField = StringUtils.defaultIfBlank(sorter.equals("")?"":sorter.split("=")[0],"CREATE_TIME");
@@ -37,5 +38,9 @@ public class CommonUtil {
 	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
 	    Map<Object, Boolean> concurrentHashMap = new ConcurrentHashMap<>();
 	    return t -> concurrentHashMap.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
+	}
+
+	public static SecurityUserInfo getSecurityUserInfo(){
+		return (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 	}
 }

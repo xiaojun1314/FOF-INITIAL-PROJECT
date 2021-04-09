@@ -18,7 +18,7 @@ public interface DictionaryTypeDao {
 
 	public Integer update(SysDictionaryTypeEntity entity);
 
-	public Integer delete(@Param(value = "deleter") String deleter, @Param("idsList") List<String> idsList);
+	public Integer delete(@Param("idList") List<String> idList);
 
 	public Integer checkCode(SysDictionaryTypeEntity entity);
 

@@ -2,12 +2,13 @@ package com.fof.common.util;
 
 import com.alibaba.fastjson.JSONObject;
 import com.fof.Application;
+import com.fof.init.entity.SysDepartmentEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Test {
     public static void main(String[] args) {
@@ -28,6 +29,14 @@ public class Test {
         }
 */
         System.out.println(new BCryptPasswordEncoder().encode("123456"));
+
+        List<SysDepartmentEntity> sysDepartmentList= new ArrayList<SysDepartmentEntity>();
+        List<String> idList = sysDepartmentList.stream().map(item -> item.getId()).collect(Collectors.toList());
+        String[] ids = idList.stream().toArray(String[]::new);
+        System.out.println(ids.length);
+        System.out.println("----");
+
+        StringUtils.strip("","{}");
     }
 
 }

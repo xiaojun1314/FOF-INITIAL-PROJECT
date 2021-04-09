@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.JobAndTriggerDao">
+    <sql id="all_columns">
+       JOBNAME,DESCRIPTION,JOBGROUP,JOBCLASSNAME,TRIGGERNAME,TRIGGERGROUP,PREVFIRETIME,NEXTFIRETIME,CRONEXPRESSION,TRIGGERSTATE,STARTTIME,ENDTIME
+	</sql>
+    <sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+    <sql id="pagination_end">
+        <![CDATA[
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1
+	    ]]>
+    </sql>
+    <!-- 查询所有数据 -->
+    <select id="getJobAndTriggerAll" resultType="com.fof.init.entity.JobAndTriggerEntity" parameterType="java.util.HashMap">
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_start" />
+            </if>
+        </if>
+        select * from
+        (SELECT
+        JD.JOB_NAME AS JOBNAME,
+        T.DESCRIPTION AS JOBDESCRIPTION,
+        JD.JOB_GROUP AS JOBGROUPNAME,
+        JD.JOB_CLASS_NAME AS JOBCLASSNAME,
+        T.TRIGGER_NAME AS TRIGGERNAME,
+        T.TRIGGER_GROUP AS TRIGGERGROUPNAME,
+        TO_CHAR(T.PREV_FIRE_TIME/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS PREVFIRETIME,
+        TO_CHAR(T.NEXT_FIRE_TIME/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') AS NEXTFIRETIME,
+        CT.CRON_EXPRESSION AS CRONEXPRESSION,
+        T.TRIGGER_STATE AS TRIGGERSTATE,
+        TO_CHAR(T.START_TIME/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') as STARTTIME,
+        TO_CHAR(T.END_TIME/ (1000 * 60 * 60 * 24) + TO_DATE('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS') as ENDTIME
+        FROM
+        QRTZ_JOB_DETAILS JD
+        JOIN QRTZ_TRIGGERS T  ON JD.JOB_NAME = T.JOB_NAME
+        JOIN QRTZ_CRON_TRIGGERS CT ON  T.TRIGGER_NAME = CT.TRIGGER_NAME
+        AND T.TRIGGER_GROUP = CT.TRIGGER_GROUP )
+        where 1=1
+        <if test="triggerState != null and triggerState !='' and triggerState=='ACQUIRED'">
+            and TRIGGERSTATE in('ACQUIRED','WAITING','BLOCKED')
+        </if>
+
+        <if test="triggerState != null and triggerState != '' and triggerState=='PAUSED'">
+            and TRIGGERSTATE=#{triggerState}
+        </if>
+
+        <if test="jobName != null and jobName != ''">
+            and JOBNAME=#{jobName}
+        </if>
+
+        <if test="jobNames!=null and jobNames!=''">
+            AND JOBNAME IN
+            <foreach item="item" index="index" collection="jobNames.split(',')"  open="(" separator="," close=")">
+                '${item}'
+            </foreach>
+        </if>
+
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField}
+        </if>
+        <if test="sortType != null and sortType != ''">
+            ${sortType},JOBNAME  DESC
+        </if>
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_end" />
+            </if>
+        </if>
+    </select>
+
+    <select id="getJobAndTriggerCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM QRTZ_JOB_DETAILS JD
+        JOIN QRTZ_TRIGGERS T  ON JD.JOB_NAME = T.JOB_NAME
+        JOIN QRTZ_CRON_TRIGGERS CT ON  T.TRIGGER_NAME = CT.TRIGGER_NAME
+        AND T.TRIGGER_GROUP = CT.TRIGGER_GROUP
+        where 1=1
+        <if test="triggerState != null and triggerState !='' and triggerState == 'ACQUIRED'">
+            and T.TRIGGER_STATE in('ACQUIRED','WAITING','BLOCKED')
+        </if>
+
+        <if test="triggerState !=null and triggerState !='' and triggerState == 'PAUSED'">
+            and T.TRIGGER_STATE=#{triggerState}
+        </if>
+
+        <if test="jobName != null and jobName != ''">
+            and JD.JOB_NAME=#{jobName}
+        </if>
+
+    </select>
+
+    <select id="checkJobClassName" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+       SELECT  COUNT(*) FROM QRTZ_JOB_DETAILS JD
+		JOIN QRTZ_TRIGGERS T  ON JD.JOB_NAME = T.JOB_NAME
+		JOIN QRTZ_CRON_TRIGGERS CT ON  T.TRIGGER_NAME = CT.TRIGGER_NAME
+		AND T.TRIGGER_GROUP = CT.TRIGGER_GROUP WHERE JD.JOB_CLASS_NAME='${jobClassName}'
+  	</select>
+
+    <select id="checkJobName" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+       SELECT  COUNT(*) FROM
+		QRTZ_JOB_DETAILS JD
+		JOIN QRTZ_TRIGGERS T  ON JD.JOB_NAME = T.JOB_NAME
+		JOIN QRTZ_CRON_TRIGGERS CT ON  T.TRIGGER_NAME = CT.TRIGGER_NAME
+		AND T.TRIGGER_GROUP = CT.TRIGGER_GROUP WHERE JD.JOB_NAME='${jobName}'
+  	</select>
+    <select id="findJobAndTriggerCountInfo"  resultType="com.fof.init.entity.JobAndTriggerEntity" parameterType="java.util.HashMap">
+ 	            select A.ACQUIREDCOUNT,B.PAUSEDCOUNT,C.ERRORCOUNT from
+				(select count(*) ACQUIREDCOUNT from QRTZ_TRIGGERS where  TRIGGER_STATE in('ACQUIRED','WAITING','BLOCKED'))A,
+				(select count(*) PAUSEDCOUNT from QRTZ_TRIGGERS where TRIGGER_STATE='PAUSED') B ,
+				(select count(*) ERRORCOUNT from QRTZ_TRIGGERS where TRIGGER_STATE='ERROR')C
+  	</select>
+
+
+</mapper>

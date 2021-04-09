@@ -28,6 +28,10 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
     @JoinTable(name = "SYS_ROLE_USER",joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private List<SysUserInfoEntity> sysUserInfoList;
 
+    @ManyToMany
+    @JoinTable(name = "SYS_ROLE_AUTHORITY",joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "authority_id"))
+    private List<SysAuthorityEntity> sysAuthorityInfoList;
+
 
     @Transient
     private String  foreignId;
@@ -119,5 +123,13 @@ public class SysRoleInfoEntity extends BaseNoIdEntity {
 
     public void setSubCompanyText(String subCompanyText) {
         this.subCompanyText = subCompanyText;
+    }
+
+    public List<SysAuthorityEntity> getSysAuthorityInfoList() {
+        return sysAuthorityInfoList;
+    }
+
+    public void setSysAuthorityInfoList(List<SysAuthorityEntity> sysAuthorityInfoList) {
+        this.sysAuthorityInfoList = sysAuthorityInfoList;
     }
 }

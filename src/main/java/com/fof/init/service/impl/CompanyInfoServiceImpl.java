@@ -35,10 +35,12 @@ public class CompanyInfoServiceImpl implements ICompanyInfoService {
     }
 
     public Integer insert(SysCompanyEntity entity) {
+        entity.setCreater(CommonUtil.getSecurityUserInfo().getId());
         return companyInfoDao.insert(entity);
     }
 
     public Integer update(SysCompanyEntity entity) {
+        entity.setUpdater(CommonUtil.getSecurityUserInfo().getId());
         return companyInfoDao.update(entity);
     }
 

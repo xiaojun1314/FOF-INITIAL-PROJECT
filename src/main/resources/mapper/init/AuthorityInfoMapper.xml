@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.AuthorityInfoDao">
+     <sql id="all_columns">
+        ID, NAME, TYPE,DESCRIPTION,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+    </sql>
+	<sql id="update_sql">
+		UPDATE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+	<sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = TO_CHAR(SYSDATE,'yyyy-MM-dd HH24:mi:ss')
+    </sql>
+	<sql id="pagination_start">
+		SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM (
+    </sql>
+	<sql id="pagination_end">
+        <![CDATA[
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1
+	    ]]>
+    </sql>
+	<sql id="sql_where" >
+		<if test="id != null and id != ''">
+			AND ID=#{id}
+		</if>
+		<if test="type != null and type != ''">
+			AND TYPE=#{type}
+		</if>
+		<if test="name != null and name != ''">
+			AND NAME=#{name}
+		</if>
+		<if test="description != null and description != ''">
+			AND DESCRIPTION=#{description}
+		</if>
+		<if test="delete_flag != null and delete_flag != ''">
+			AND DELETE_FLAG=#{delete_flag}
+		</if>
+		<if test="create_time != null and create_time != ''">
+			AND CREATE_TIME=#{create_time}
+		</if>
+		<if test="creater != null and creater != ''">
+			AND CREATER=#{creater}
+		</if>
+		<if test="update_time != null and update_time != ''">
+			AND UPDATE_TIME=#{update_time}
+		</if>
+		<if test="updater != null and updater != ''">
+			AND UPDATER=#{updater}
+		</if>
+		<if test="delete_time != null and delete_time != ''">
+			AND DELETE_TIME=#{delete_time}
+		</if>
+		<if test="deleter != null and deleter != ''">
+			AND DELETER=#{deleter}
+		</if>
+	</sql>
+
+	<select id="getAll" resultType="com.fof.init.entity.SysAuthorityEntity" parameterType="java.util.HashMap">
+		<if test="limit!=null and limit!=''">
+			<if test="limit>=0">
+				<include refid="pagination_start" />
+			</if>
+		</if>
+		SELECT * FROM SYS_AUTHORITY_INFO WHERE 1=1
+
+		<include refid="sql_where" />
+
+		<if test="sortField != null and sortField != ''">
+			ORDER BY ${sortField}
+		</if>
+		<if test="sortType != null and sortType != ''">
+			${sortType},ID  DESC
+		</if>
+		<if test="limit!=null and limit!=''">
+			<if test="limit>=0">
+				<include refid="pagination_end" />
+			</if>
+		</if>
+	</select>
+
+	<select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+		SELECT COUNT(1) FROM SYS_AUTHORITY_INFO WHERE 1=1
+		<include refid="sql_where" />
+	</select>
+
+	<insert id="insert" parameterType="com.fof.init.entity.SysAuthorityEntity" >
+    	<!--获取最新更新的主键-->
+    	<selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+          SELECT LOWER(SYS_GUID()) AS GUID FROM DUAL
+        </selectKey>
+        INSERT INTO SYS_AUTHORITY_INFO (<include refid="all_columns"/>)
+        VALUES (
+        #{id,jdbcType = VARCHAR},
+        #{name,jdbcType = VARCHAR},
+        #{type,jdbcType = VARCHAR},
+        #{description,jdbcType = VARCHAR},
+		#{delete_flag,jdbcType = VARCHAR},
+		to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+		#{creater,jdbcType = VARCHAR},
+		#{update_time,jdbcType = VARCHAR},
+		#{updater,jdbcType = VARCHAR},
+		#{delete_time,jdbcType = VARCHAR},
+		#{deleter,jdbcType = VARCHAR}
+        )
+    </insert>
+    
+    <update id="update" parameterType="com.fof.init.entity.SysAuthorityEntity">
+        UPDATE SYS_AUTHORITY_INFO SET
+        <if test="null != name and name != ''">
+			NAME = #{name,jdbcType = VARCHAR},
+		</if>
+		<if test="null != type and type != ''">
+			TYPE = #{type,jdbcType = VARCHAR},
+		</if>
+		<if test="null != description and description != ''">
+			DESCRIPTION = #{description,jdbcType = VARCHAR},
+		</if>
+		<if test="delete_flag != null and delete_flag != ''">
+			DELETE_FLAG = #{delete_flag},
+		</if>
+		<if test="create_time != null and create_time != ''">
+			CREATE_TIME = #{create_time},
+		</if>
+		<if test="creater != null and creater != ''">
+			CREATER = #{creater},
+		</if>
+		<if test="delete_time != null and delete_time != ''">
+			DELETE_TIME = #{delete_time},
+		</if>
+		<if test="deleter != null and deleter != ''">
+			DELETER = #{deleter},
+		</if>
+		<if test="updater != null and updater != ''">
+			UPDATER = #{updater},
+		</if>
+		<include refid="update_sql" />
+        WHERE ID = #{id,jdbcType = VARCHAR}
+    </update>
+    
+
+  	
+  	<update id="deleteById">
+  	    UPDATE SYS_AUTHORITY_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
+  	    WHERE ID = #{id}
+    </update>
+
+
+	<select id="findAuthCountInfo"  resultType="com.fof.init.entity.SysAuthorityEntity" parameterType="java.util.HashMap">
+         SELECT
+             SUM(NVL(DECODE(TYPE,'0','1'),0)) MENUCOUNT,
+             SUM(NVL(DECODE(TYPE,'1','1'),0)) ELEMENTCOUNT,
+             SUM(NVL(DECODE(TYPE,'2','1'),0)) OPERATIONCOUNT,
+             SUM(NVL(DECODE(TYPE,'3','1'),0)) FILECOUNT
+          FROM SYS_AUTHORITY_INFO
+  	</select>
+
+
+	<update id="deleteByIdList" parameterType="java.lang.String">
+		DELETE FROM SYS_AUTHORITY_INFO WHERE  ID IN
+		<foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
+		</foreach>
+	</update>
+
+
+	<update id="deleteByModuleElementIdList" parameterType="java.lang.String">
+		UPDATE SYS_AUTHORITY_INFO SET <include refid="delete_sql"/>, DELETER=#{deleter,jdbcType = VARCHAR}
+		WHERE ID IN (select authority_id from SYS_MODULE_ELEMENT where id in (
+		<foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
+		</foreach>
+		))
+	</update>
+  	
+</mapper>

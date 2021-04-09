@@ -16,7 +16,7 @@ public interface IDictionaryInfoService {
 	
 	public Integer update(SysDictionaryInfoEntity entity);
 
-	public Integer delete(String deleter,List<String> idsList);
+	public Integer delete(List<String> idList);
 	
     boolean  checkCode(SysDictionaryInfoEntity entity);
     

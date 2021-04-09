@@ -99,16 +99,16 @@
         </selectKey>
         INSERT INTO SYS_DICTIONARY_TYPE (<include refid="all_columns" />)
         VALUES (
-            #{id,jdbcType = VARCHAR},
-            #{name,jdbcType = VARCHAR},
-            #{code,jdbcType = VARCHAR},
-		    #{delete_flag,jdbcType = VARCHAR},
-		    to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
-		    #{creater,jdbcType = VARCHAR},
-		    #{update_time,jdbcType = VARCHAR},
-		    #{updater,jdbcType = VARCHAR},
-		    #{delete_time,jdbcType = VARCHAR},
-		    #{deleter,jdbcType = VARCHAR}
+        #{id,jdbcType = VARCHAR},
+        #{name,jdbcType = VARCHAR},
+        #{code,jdbcType = VARCHAR},
+		#{delete_flag,jdbcType = VARCHAR},
+		to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+		#{creater,jdbcType = VARCHAR},
+		#{update_time,jdbcType = VARCHAR},
+		#{updater,jdbcType = VARCHAR},
+		#{delete_time,jdbcType = VARCHAR},
+		#{deleter,jdbcType = VARCHAR}
         )
     </insert>
  	<!-- 修改数据 -->
@@ -144,10 +144,9 @@
     
     <!-- 根据主键删除数据 -->
     <update id="delete">
-        UPDATE SYS_DICTIONARY_TYPE SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-        WHERE ID IN
-		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
-			#{item,jdbcType=VARCHAR}
+		DELETE FROM SYS_DICTIONARY_TYPE WHERE  ID IN
+		<foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
 		</foreach>
     </update>
     

@@ -13,6 +13,7 @@ import java.util.Map;
  * @Depiction:
  **/
 public interface ISubCompanyInfoService {
+
     List<SysSubCompanyEntity> getAll(Map<String,Object> searchParams,String sorter);
 
     public SysSubCompanyEntity findById(String id);
@@ -26,4 +27,7 @@ public interface ISubCompanyInfoService {
     public Integer update(SysSubCompanyEntity entity);
 
     public String  getIdsByForeignId(Map<String,Object> searchParams);
+
+    public void delete(List<String> idList);
+
 }

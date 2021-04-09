@@ -1,15 +1,16 @@
 package com.fof.init.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fof.common.bean.SecurityUserInfo;
+import com.fof.common.bean.JsonResult;
 import com.fof.common.util.Constants;
+import com.fof.common.util.ResultTool;
 import com.fof.common.util.StringHelper;
+import com.fof.init.entity.SysDictionaryTypeEntity;
 import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.service.IUserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,184 +24,77 @@ import java.util.*;
 public class UserManageController {
     @Autowired
 	private IUserInfoService userInfoService;
-
-    @RequestMapping(value="/queryUserList",method= RequestMethod.POST)
-  	public void queryUserList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> searchParams)throws Exception{
-    	JSONObject json = new JSONObject();
-    	response.setContentType("application/json;charset=UTF-8");
-    	try {
-    		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
-    		searchParams.put("limit", pageParams[1]);
-    		searchParams.put("offset", pageParams[0]);
-    		searchParams.put("delete_flag", Constants.DELFLG_N);
-    		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, StringUtils.strip(searchParams.get("sorter").toString(),"{}"));
-    		json.put("data", list);
-    		int count =userInfoService.getCount(searchParams);
-        	json.put("IsSuccess", true);
-			json.put("total", count);
-        	json.put("Message", "查询成功");
-        } catch (Exception e) {
-    		e.printStackTrace();
-            json.put("IsSuccess", false);
-            json.put("Message", "查询失败");
-        }
-        try {
-            response.getWriter().write(json.toJSONString());
-        } catch (Exception e) {
-			e.printStackTrace();
-        }
-  	}
-
+	/**查询信息*/
+	@RequestMapping(value="/queryUserList",method= RequestMethod.POST)
+	public void queryUserList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> searchParams) throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
+		searchParams.put("limit", pageParams[1]);
+		searchParams.put("offset", pageParams[0]);
+		List<SysUserInfoEntity>  list =userInfoService.getAll(searchParams, searchParams.containsKey("sorter")?StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
+		json.put("data", list);
+		int count =userInfoService.getCount(searchParams);
+		json.put("total", count);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
+	}
+	/**删除信息*/
 	@RequestMapping(value="/removeUserInfo",method=RequestMethod.POST)
-	public String removeUserInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> params)throws Exception{
+	public void removeUserInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> params) throws Exception{
 		JSONObject json = new JSONObject();
 		response.setContentType("text/html; charset=UTF-8");
-		try {
-			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			ArrayList<String> idsList=(ArrayList<String>)params.get("ids");
-			if(idsList.size()>0) {
-				String[] ids = idsList.stream().toArray(String[]::new);
-				int flag= userInfoService.delete(securityUserInfo.getId(),ids);
-				if(flag>0) {
-					json.put("IsSuccess", true);
-					json.put("Message", "删除成功");
-				}else {
-					json.put("IsSuccess", false);
-					json.put("Message", "删除失败");
-				}
-			}else {
-				json.put("IsSuccess", false);
-				json.put("Message", "删除失败");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "删除失败");
-		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		ArrayList<String> idList=(ArrayList<String>)params.get("ids");
+		userInfoService.delete(idList);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
 
-	/**添加用户信息*/
+	/**添加信息*/
 	@RequestMapping(value="/saveUserInfo",method=RequestMethod.POST)
-	public String saveUserInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysUserInfoEntity entity){
+	public void saveUserInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody SysUserInfoEntity entity) throws Exception{
 		JSONObject json = new JSONObject();
 		response.setContentType("text/html; charset=UTF-8");
-		try {
-			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			entity.setPassWord(new BCryptPasswordEncoder().encode(entity.getPassWord()));
-			entity.setCreater(securityUserInfo.getId());
-			int flag=userInfoService.insert(entity);
-			if(flag==1) {
-				json.put("IsSuccess", true);
-				json.put("Message", "保存成功");
-			}else {
-				json.put("IsSuccess", true);
-				json.put("Message", "保存失败");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "保存失败");
-		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
+		userInfoService.insert(entity);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
-
+	/**更新信息*/
 	@RequestMapping(value="/editUserInfo",method= RequestMethod.POST)
 	public void editUserInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
 		JSONObject json = new JSONObject();
-		response.setContentType("application/json;charset=UTF-8");
-		try {
-			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			entity.setUpdater(securityUserInfo.getId());
-			int flag=userInfoService.update(entity);
-			if(flag==1) {
-				json.put("IsSuccess", true);
-				json.put("Message", "更新成功");
-			}else {
-				json.put("IsSuccess", true);
-				json.put("Message", "更新失败");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "更新失败");
-		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		response.setContentType("text/html; charset=UTF-8");
+		userInfoService.update(entity);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
-
-
+	/**检查用户名称*/
 	@RequestMapping(value="/checkUserName",method= RequestMethod.POST)
 	public void checkInfoCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
 		JSONObject json = new JSONObject();
 		response.setContentType("application/json;charset=UTF-8");
-		try {
-			if(null==entity.getId()||(null!=entity.getId()&&!entity.getUserName().equals(entity.getOldUserName()))) {
-				boolean checkResult=userInfoService.checkUserName(entity);
-				if(checkResult) {
-					json.put("IsSuccess",true);
-					json.put("Message", "检查通过");
-				}else {
-					json.put("IsSuccess",false);
-					json.put("Message", "检查不通过");
-				}
-			}else {
-				json.put("IsSuccess",true);
-				json.put("Message", "检查通过");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "检查不通过");
+		if(null==entity.getId()||(null!=entity.getId()&&!entity.getUserName().equals(entity.getOldUserName()))) {
+			boolean checkResult=userInfoService.checkUserName(entity);
+			json.put("checkResult", checkResult);
+		}else{
+			json.put("checkResult", true);
 		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
-
+	/**检查用户编码*/
 	@RequestMapping(value="/checkUserCode",method= RequestMethod.POST)
 	public void checkUserCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
 		JSONObject json = new JSONObject();
 		response.setContentType("application/json;charset=UTF-8");
-		try {
-			if(null==entity.getId()||(null!=entity.getId()&&null==entity.getOldUserCode())||(null!=entity.getId()&&!entity.getUserCode().equals(entity.getOldUserCode()))) {
-				boolean checkResult=userInfoService.checkUserCode(entity);
-				if(checkResult) {
-                    json.put("IsSuccess",true);
-                    json.put("Message", "检查通过");
-                }else {
-                    json.put("IsSuccess",false);
-                    json.put("Message", "检查不通过");
-                }
-			}else {
-				json.put("IsSuccess",true);
-				json.put("Message", "检查通过");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "检查不通过");
+		if(null==entity.getId()||(null!=entity.getId()&&null==entity.getOldUserCode())||(null!=entity.getId()&&!entity.getUserCode().equals(entity.getOldUserCode()))) {
+			boolean checkResult=userInfoService.checkUserCode(entity);
+			json.put("checkResult", checkResult);
+		}else{
+			json.put("checkResult", true);
 		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
 
 	/**重置用户密码*/
@@ -208,28 +102,44 @@ public class UserManageController {
 	public void resetUserInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysUserInfoEntity entity)throws Exception{
 		JSONObject json = new JSONObject();
 		response.setContentType("application/json;charset=UTF-8");
-		try {
-			SecurityUserInfo securityUserInfo = (SecurityUserInfo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			entity.setUpdater(securityUserInfo.getId());
-			entity.setPassWord(new BCryptPasswordEncoder().encode(entity.getPassWord()));
-			int flag=userInfoService.resetPassWord(entity);
-			if(flag==1) {
-				json.put("IsSuccess", true);
-				json.put("Message", "重置成功");
-			}else {
-				json.put("IsSuccess", true);
-				json.put("Message", "重置失败");
-			}
-		}catch (Exception e) {
-			e.printStackTrace();
-			json.put("IsSuccess", false);
-			json.put("Message", "重置失败");
-		}
-		try {
-			response.getWriter().write(json.toJSONString());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		userInfoService.resetPassWord(entity);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
+	}
+
+	@RequestMapping(value="/queryUserListByRole",method=RequestMethod.POST)
+	public void queryUserListByRole(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
+		searchParams.put("limit", pageParams[1]);
+		searchParams.put("offset", pageParams[0]);
+		searchParams.put("delete_flag", Constants.DELFLG_N);
+		/**查询该角色里面已有的用户信息 flag==1*/
+		searchParams.put("flag", 1);
+		List<SysUserInfoEntity>  list =userInfoService.getAllByRoleId(searchParams, searchParams.containsKey("sorter")?StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
+		json.put("data", list);
+		int count =userInfoService.getCountByRoleId(searchParams);
+		json.put("total", count);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
+	}
+
+	@RequestMapping(value="/queryNoUserListByRole",method=RequestMethod.POST)
+	public void queryNoUserListByRole(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+		JSONObject json = new JSONObject();
+		response.setContentType("application/json;charset=UTF-8");
+		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
+		searchParams.put("limit", pageParams[1]);
+		searchParams.put("offset", pageParams[0]);
+		searchParams.put("delete_flag", Constants.DELFLG_N);
+		searchParams.put("flag", 0);
+		List<SysUserInfoEntity>  list =userInfoService.getAllByRoleId(searchParams, searchParams.containsKey("sorter")?StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
+		json.put("data", list);
+		int count =userInfoService.getCountByRoleId(searchParams);
+		json.put("total", count);
+		JsonResult result = ResultTool.success(json);
+		response.getWriter().write(JSON.toJSONString(result));
 	}
 
 	public  int[] initPage(String currentPage,String pageSize1) {

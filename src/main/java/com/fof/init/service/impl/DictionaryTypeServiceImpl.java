@@ -17,6 +17,7 @@ import java.util.Map;
 public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
 	@Autowired
 	private DictionaryTypeDao dictionaryTypeDao;
+
 	@Autowired
 	private DictionaryInfoDao dictionaryInfoDao;
 	
@@ -36,6 +37,7 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
 	}
 
 	public Integer insert(SysDictionaryTypeEntity entity) {
+		entity.setCreater(CommonUtil.getSecurityUserInfo().getId());
 		return dictionaryTypeDao.insert(entity);
 	}
 
@@ -44,9 +46,9 @@ public class DictionaryTypeServiceImpl implements IDictionaryTypeService {
 	}
 
 	@Transactional(value = "transactionManager")
-	public Integer delete(String deleter,List<String> idsList) {
-		       dictionaryInfoDao.deleteByForeignId(deleter,idsList);
-		return dictionaryTypeDao.delete(deleter,idsList);
+	public Integer delete(List<String> idList) {
+		       dictionaryInfoDao.deleteByForeignId(idList);
+		return dictionaryTypeDao.delete(idList);
 	}
 	
 	public boolean  checkCode(SysDictionaryTypeEntity entity) {

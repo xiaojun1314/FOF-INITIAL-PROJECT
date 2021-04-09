@@ -3,7 +3,6 @@ package com.fof.init.entity;
 import com.fof.common.entity.BaseNoIdEntity;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * 系统菜单管理
@@ -30,11 +29,11 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
     
     /**排序号*/
     @Column(name="order_no",columnDefinition="varchar(225)")
-    private String orderNo;
+    private String order_no;
     
     /**是否隐藏菜单*/
     @Column(name="is_hide",columnDefinition="varchar(225)")
-    private String isHide;
+    private String is_hide;
     
     /**隐藏文本*/
     @Transient
@@ -42,15 +41,15 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
     
     /**是否组还是末级*/
     @Column(name="is_leaf",columnDefinition="varchar(225)")
-    private String isLeaf;
+    private String is_leaf;
     
     /**小图标*/
-    @Column(name="ico",columnDefinition="varchar(225)")
-    private String ico;
+    @Column(name="icon",columnDefinition="varchar(225)")
+    private String icon;
     
     /**父类ID*/
     @Column(name="parent_id",columnDefinition="varchar(225)")
-    private String parentId;
+    private String parent_id;
 
 	/**层级*/
 	@Transient
@@ -75,6 +74,13 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
     /**按钮是否显示3*/
     @Transient
     private boolean  btn1Visible;
+
+	@OneToOne
+	@JoinColumn(name="authority_id")
+	private SysAuthorityEntity sysAuthorityEntity;
+
+	@Transient
+	private String  authority_id;
 
 	public String getName() {
 		return name;
@@ -108,22 +114,6 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
 		this.description = description;
 	}
 
-	public String getOrderNo() {
-		return orderNo;
-	}
-
-	public void setOrderNo(String orderNo) {
-		this.orderNo = orderNo;
-	}
-
-	public String getIsHide() {
-		return isHide;
-	}
-
-	public void setIsHide(String isHide) {
-		this.isHide = isHide;
-	}
-
 	public String getIsHideText() {
 		return isHideText;
 	}
@@ -132,29 +122,6 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
 		this.isHideText = isHideText;
 	}
 
-	public String getIsLeaf() {
-		return isLeaf;
-	}
-
-	public void setIsLeaf(String isLeaf) {
-		this.isLeaf = isLeaf;
-	}
-
-	public String getIco() {
-		return ico;
-	}
-
-	public void setIco(String ico) {
-		this.ico = ico;
-	}
-
-	public String getParentId() {
-		return parentId;
-	}
-
-	public void setParentId(String parentId) {
-		this.parentId = parentId;
-	}
 
 	public String getParentName() {
 		return parentName;
@@ -204,5 +171,59 @@ public class SysMenuInfoEntity extends BaseNoIdEntity {
 		this.level = level;
 	}
 
+	public String getOrder_no() {
+		return order_no;
+	}
 
+	public void setOrder_no(String order_no) {
+		this.order_no = order_no;
+	}
+
+	public String getIs_hide() {
+		return is_hide;
+	}
+
+	public void setIs_hide(String is_hide) {
+		this.is_hide = is_hide;
+	}
+
+	public String getIs_leaf() {
+		return is_leaf;
+	}
+
+	public void setIs_leaf(String is_leaf) {
+		this.is_leaf = is_leaf;
+	}
+
+	public String getParent_id() {
+		return parent_id;
+	}
+
+	public void setParent_id(String parent_id) {
+		this.parent_id = parent_id;
+	}
+
+	public SysAuthorityEntity getSysAuthorityEntity() {
+		return sysAuthorityEntity;
+	}
+
+	public void setSysAuthorityEntity(SysAuthorityEntity sysAuthorityEntity) {
+		this.sysAuthorityEntity = sysAuthorityEntity;
+	}
+
+	public String getAuthority_id() {
+		return authority_id;
+	}
+
+	public void setAuthority_id(String authority_id) {
+		this.authority_id = authority_id;
+	}
+
+	public String getIcon() {
+		return icon;
+	}
+
+	public void setIcon(String icon) {
+		this.icon = icon;
+	}
 }

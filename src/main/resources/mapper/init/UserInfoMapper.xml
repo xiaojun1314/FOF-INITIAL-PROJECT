@@ -92,10 +92,9 @@
     </select>
 
     <delete id="delete">
-        UPDATE SYS_USER_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-        WHERE ID IN
-        <foreach item="id" collection="ids" open="(" separator="," close=")">
-            #{id,jdbcType = VARCHAR}
+        DELETE FROM SYS_USER_INFO WHERE  ID IN
+        <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=VARCHAR}
         </foreach>
     </delete>
 
@@ -176,5 +175,44 @@
         <include refid="update_sql" />
         WHERE ID = #{id}
     </update>
+
+    <select id="getAllByRoleId" resultType="com.fof.init.entity.SysUserInfoEntity" parameterType="java.util.HashMap">
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_start"/>
+            </if>
+        </if>
+        SELECT * from SYS_USER_INFO A
+        WHERE 1=1 AND
+        <if test="flag==1">
+            EXISTS (SELECT USER_ID FROM SYS_ROLE_USER B  WHERE ROLE_ID=#{roleId,jdbcType = VARCHAR} AND A.ID =B.USER_ID)
+        </if>
+        <if test="flag==0">
+            NOT EXISTS (SELECT USER_ID FROM SYS_ROLE_USER B  WHERE ROLE_ID=#{roleId,jdbcType = VARCHAR} AND A.ID =B.USER_ID)
+        </if>
+        <include refid="sql_where" />
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField}
+        </if>
+        <if test="sortType!=null and sortType!=''">
+            ${sortType} ,ID  DESC
+        </if>
+        <if test="limit!=null and limit!=''">
+            <if test="limit>=0">
+                <include refid="pagination_end" />
+            </if>
+        </if>
+    </select>
+
+    <select id="getCountByRoleId" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM SYS_USER_INFO A  WHERE  1=1 AND
+        <if test="flag==1">
+            EXISTS (SELECT USER_ID FROM SYS_ROLE_USER B  WHERE ROLE_ID=#{roleId,jdbcType = VARCHAR} AND A.ID =B.USER_ID)
+        </if>
+        <if test="flag==0">
+            NOT EXISTS (SELECT USER_ID FROM SYS_ROLE_USER B  WHERE ROLE_ID=#{roleId,jdbcType = VARCHAR} AND A.ID =B.USER_ID)
+        </if>
+        <include refid="sql_where" />
+    </select>
 
 </mapper>

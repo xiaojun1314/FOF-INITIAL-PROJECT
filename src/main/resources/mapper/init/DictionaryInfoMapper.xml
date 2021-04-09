@@ -83,7 +83,6 @@
 		<if test="deleter != null and deleter != ''">
 			AND DELETER=#{deleter}
 		</if>
-
 	</sql>
     <!-- 查询所有数据 -->
   	<select id="getAll" resultType="com.fof.init.entity.SysDictionaryInfoEntity" parameterType="java.util.HashMap">
@@ -217,18 +216,16 @@
     </update>
 
     <update id="delete" >
-       UPDATE SYS_DICTIONARY_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-        WHERE ID IN
-		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
-			#{item,jdbcType=VARCHAR}
+		DELETE FROM SYS_DICTIONARY_INFO WHERE  ID IN
+		<foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
 		</foreach>
     </update>
 
 	<update id="deleteByForeignId" >
-		UPDATE SYS_DICTIONARY_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-		WHERE FOREIGNID IN
-		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">
-			#{item,jdbcType=VARCHAR}
+		DELETE FROM SYS_DICTIONARY_INFO WHERE  FOREIGNID IN
+		<foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+			#{id,jdbcType=VARCHAR}
 		</foreach>
 	</update>
 </mapper>

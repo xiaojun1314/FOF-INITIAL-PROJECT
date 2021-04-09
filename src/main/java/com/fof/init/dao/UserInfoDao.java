@@ -13,11 +13,11 @@ public interface UserInfoDao {
 
 	 public SecurityUserInfo getByUserName(String userName);
 
-	 public List<SysUserInfoEntity> getAll(Map<String,Object> map);
+	 public List<SysUserInfoEntity> getAll(Map<String,Object> searchParams);
 
 	 public Integer getCount(Map<String,Object> map);
 
-	 public Integer delete(@Param(value = "deleter") String deleter,@Param(value = "ids") String[] ids);
+	 public Integer delete(@Param("idList") List<String> idList);
 
 	 public Integer insert(SysUserInfoEntity entity);
 
@@ -30,6 +30,10 @@ public interface UserInfoDao {
 	 public Integer checkUserCode(SysUserInfoEntity entity);
 
 	 public Integer resetPassWord(SysUserInfoEntity entity);
+
+	public List<SysUserInfoEntity> getAllByRoleId(Map<String,Object> searchParams);
+
+	public Integer getCountByRoleId(Map<String,Object> searchParams);
 
 
 }

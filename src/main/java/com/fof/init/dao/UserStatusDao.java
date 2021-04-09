@@ -4,6 +4,8 @@ import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.entity.SysUserStatusEntity;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @className: UserStatusDao
  * @author: jun
@@ -14,5 +16,5 @@ public interface UserStatusDao {
 
     public Integer insert(SysUserStatusEntity entity);
 
-    public Integer delete(@Param(value = "deleter") String deleter,@Param(value = "ids") String[] ids);
+    public Integer delete(@Param("idList") List<String> idList);
 }

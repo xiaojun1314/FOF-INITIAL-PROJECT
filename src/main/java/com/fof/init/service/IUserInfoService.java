@@ -16,7 +16,7 @@ public interface IUserInfoService {
 
 	public Integer getCount(Map<String,Object> map);
 
-	public Integer delete(String deleter,String[] ids);
+	public Integer delete(List<String> idList);
 
 	public Integer insert(SysUserInfoEntity entity);
 
@@ -29,5 +29,9 @@ public interface IUserInfoService {
 	public boolean checkUserCode(SysUserInfoEntity entity);
 
 	public Integer resetPassWord(SysUserInfoEntity entity);
+
+	public List<SysUserInfoEntity> getAllByRoleId(Map<String, Object> map,String sorter);
+
+	public Integer getCountByRoleId(Map<String,Object> map);
 
 }

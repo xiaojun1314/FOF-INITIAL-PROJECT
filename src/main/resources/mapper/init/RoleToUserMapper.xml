@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.RoleAndUserDao">
+
+    <delete id="deleteByUserId"  parameterType="java.util.List">
+        DELETE FROM SYS_ROLE_USER WHERE  USER_ID in
+        <foreach collection="idList" index="index" item="item" open="(" separator="," close=")">
+            #{item,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByRoleIdList"  parameterType="java.util.List">
+        DELETE FROM SYS_ROLE_USER WHERE  ROLE_ID in
+        <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+   
+   <insert id="insertRoleAndUser" parameterType="com.fof.init.entity.SysRoleToUserEntity">
+        INSERT INTO SYS_ROLE_USER (USER_ID,ROLE_ID)
+        VALUES (
+            #{userId,jdbcType = VARCHAR},
+            #{roleId,jdbcType = VARCHAR}
+        )
+    </insert>
+
+    <delete id="removeRoleAndUser" parameterType="com.fof.init.entity.SysRoleToUserEntity">
+        DELETE FROM SYS_ROLE_USER WHERE USER_ID = #{userId,jdbcType = VARCHAR} AND ROLE_ID =#{roleId,jdbcType = VARCHAR}
+   </delete>
+</mapper>

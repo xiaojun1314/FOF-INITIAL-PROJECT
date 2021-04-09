@@ -54,12 +54,6 @@ public class SysDepartmentEntity extends BaseNoIdEntity {
 		this.description = description;
 	}
 
-	public String getOrder_no() {
-		return order_no;
-	}
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
-	}
 	public String getForeignId() {
 		return foreignId;
 	}
@@ -81,5 +75,13 @@ public class SysDepartmentEntity extends BaseNoIdEntity {
 
 	public void setParent_id(String parent_id) {
 		this.parent_id = parent_id;
+	}
+
+	public String getOrder_no() {
+		return order_no;
+	}
+
+	public void setOrder_no(String order_no) {
+		this.order_no = order_no;
 	}
 }

@@ -1,13 +1,19 @@
 package com.fof.init.service.impl;
 
 import com.fof.common.util.CommonUtil;
+import com.fof.common.util.Constants;
+import com.fof.init.dao.DepartmentInfoDao;
 import com.fof.init.dao.SubCompanyInfoDao;
 import com.fof.init.entity.SysCompanyEntity;
+import com.fof.init.entity.SysDepartmentEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
 import com.fof.init.service.ISubCompanyInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +28,9 @@ import java.util.stream.Collectors;
 public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
     @Autowired
     private SubCompanyInfoDao subCompanyInfoDao;
+
+    @Autowired
+    private DepartmentInfoDao departmentInfoDao;
     /**查询菜单信息*/
     public List<SysSubCompanyEntity> getAll(Map<String,Object> searchParams,String sorter) {
         String[] sorterParams = CommonUtil.initSorter(sorter);
@@ -39,10 +48,12 @@ public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
     }
 
     public Integer insert(SysSubCompanyEntity entity) {
+        entity.setCreater(CommonUtil.getSecurityUserInfo().getId());
         return subCompanyInfoDao.insert(entity);
     }
 
     public Integer update(SysSubCompanyEntity entity) {
+        entity.setUpdater(CommonUtil.getSecurityUserInfo().getId());
         return subCompanyInfoDao.update(entity);
     }
 
@@ -63,5 +74,20 @@ public class SubCompanyInfoServiceImpl implements ISubCompanyInfoService {
         }else {
             return true;
         }
+    }
+
+    @Transactional(value = "transactionManager")
+    public void delete(List<String> idList) {
+        for(String id :idList){
+            Map<String, Object> searchParams=new HashMap<String, Object>();
+            /**分部Id*/
+            searchParams.put("foreignId",id);
+            List<SysDepartmentEntity> sysDepartmentList= departmentInfoDao.findByForeignId(searchParams);
+            if(sysDepartmentList.size()>0){
+                List<String> departmentIdList = sysDepartmentList.stream().map(item -> item.getId()).collect(Collectors.toList());
+                departmentInfoDao.deleteByIdList(departmentIdList);
+            }
+        }
+        subCompanyInfoDao.delete(idList);
     }
 }

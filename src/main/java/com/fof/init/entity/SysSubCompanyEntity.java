@@ -26,10 +26,18 @@ public class SysSubCompanyEntity extends BaseNoIdEntity {
     private String order_no;
 
     @Transient
-    private String          oldCode;
+    private String  oldCode;
 
 	@Transient
 	private String  foreignId;
+
+	// 角色数量
+	@Transient
+	private int  roleCount;
+
+	// 部门数量
+	@Transient
+	private int  departmentCount;
 
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "FOREIGNID")
@@ -56,13 +64,6 @@ public class SysSubCompanyEntity extends BaseNoIdEntity {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public String getOrder_no() {
-		return order_no;
-	}
-	public void setOrder_no(String order_no) {
-		this.order_no = order_no;
 	}
 	public String getForeignId() {
 		return foreignId;
@@ -93,5 +94,29 @@ public class SysSubCompanyEntity extends BaseNoIdEntity {
 
 	public void setSysRoleInfoList(List<SysRoleInfoEntity> sysRoleInfoList) {
 		this.sysRoleInfoList = sysRoleInfoList;
+	}
+
+	public int getRoleCount() {
+		return roleCount;
+	}
+
+	public void setRoleCount(int roleCount) {
+		this.roleCount = roleCount;
+	}
+
+	public int getDepartmentCount() {
+		return departmentCount;
+	}
+
+	public void setDepartmentCount(int departmentCount) {
+		this.departmentCount = departmentCount;
+	}
+
+	public String getOrder_no() {
+		return order_no;
+	}
+
+	public void setOrder_no(String order_no) {
+		this.order_no = order_no;
 	}
 }

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.fof.init.dao.ModuleElementDao">
+     <sql id="all_columns">
+        ID,NAME,CODE,TYPE,DESCRIPTION,STATE,MODULE_ID,AUTHORITY_ID,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+    </sql> 
+    <sql id="update_sql">
+		UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql>    
+    <sql id="delete_sql">
+		DELETE_FLAG='1',DELETE_TIME = TO_CHAR(sysdate,'yyyy-MM-dd HH24:mi:ss')
+    </sql> 
+    <sql id="pagination_start">
+		  SELECT * FROM (SELECT T1.*, ROWNUM  ROW_ID FROM ( 
+    </sql>
+    <sql id="pagination_end">
+        <![CDATA[  
+		  ) T1 WHERE ROWNUM <=(#{offset}-1)*#{limit}+#{limit}) WHERE ROW_ID >= (#{offset}-1)*#{limit}+1  
+	    ]]>	 
+    </sql>
+    <sql id="sql_where" >
+        <if test="id != null and id != ''">
+            AND ID=#{id}
+        </if>
+        <if test="module_id != null and module_id != ''">
+            AND MODULE_ID=#{module_id}
+        </if>
+        <if test="moduleIdList != null and moduleIdList.size()>0">
+            AND MODULE_ID IN
+            <foreach collection="moduleIdList" index="index" item="module_id" open="(" separator="," close=")">
+                #{module_id,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+
+        <if test="name != null and name != ''">
+            AND NAME=#{name}
+        </if>
+        <if test="code != null and code != ''">
+            AND CODE=#{code}
+        </if>
+        <if test="type != null and type != ''">
+            AND TYPE=#{type}
+        </if>
+        <if test="description != null and description != ''">
+            AND DESCRIPTION=#{description}
+        </if>
+        <if test="state != null and state != ''">
+            AND STATE=#{state}
+        </if>
+        <if test="authority_id != null and authority_id != ''">
+            AND AUTHORITY_ID=#{authority_id}
+        </if>
+        <if test="delete_flag != null and delete_flag != ''">
+            AND DELETE_FLAG=#{delete_flag}
+        </if>
+        <if test="create_time != null and create_time != ''">
+            AND CREATE_TIME=#{create_time}
+        </if>
+        <if test="creater != null and creater != ''">
+            AND CREATER=#{creater}
+        </if>
+        <if test="update_time != null and update_time != ''">
+            AND UPDATE_TIME=#{update_time}
+        </if>
+        <if test="updater != null and updater != ''">
+            AND UPDATER=#{updater}
+        </if>
+        <if test="delete_time != null and delete_time != ''">
+            AND DELETE_TIME=#{delete_time}
+        </if>
+        <if test="deleter != null and deleter != ''">
+            AND DELETER=#{deleter}
+        </if>
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="getAll" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
+        <if test="limit != null and limit != ''">
+            <if test="limit>=0">
+                <include refid="pagination_start" />
+            </if>
+        </if>
+        SELECT * FROM SYS_MODULE_ELEMENT where 1=1
+
+        <include refid="sql_where" />
+
+        <if test="sortField != null and sortField != ''">
+            ORDER BY ${sortField}
+        </if>
+        <if test="sortType != null and sortType != ''">
+            ${sortType},ID  DESC
+        </if>
+        <if test="limit != null and limit != ''">
+            <if test="limit>=0">
+                <include refid="pagination_end" />
+            </if>
+        </if>
+    </select>
+
+    <select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM SYS_MODULE_ELEMENT WHERE 1=1
+        <include refid="sql_where" />
+    </select>
+    <insert id="insert" parameterType="com.fof.init.entity.SysRoleInfoEntity" >
+        <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
+            SELECT LOWER(SYS_GUID()) AS GUID FROM DUAL
+        </selectKey>
+        INSERT INTO SYS_MODULE_ELEMENT (<include refid="all_columns" />)
+        VALUES (
+        #{id,jdbcType = VARCHAR},
+        #{name,jdbcType = VARCHAR},
+        #{code,jdbcType = VARCHAR},
+        #{type,jdbcType = VARCHAR},
+        #{description,jdbcType = VARCHAR},
+        #{state,jdbcType = VARCHAR},
+        #{module_id,jdbcType = VARCHAR},
+        #{authority_id,jdbcType = VARCHAR},
+        #{delete_flag,jdbcType = VARCHAR},
+        to_char(sysdate,'yyyy-MM-dd HH24:mi:ss'),
+        #{creater,jdbcType = VARCHAR},
+        #{update_time,jdbcType = VARCHAR},
+        #{updater,jdbcType = VARCHAR},
+        #{delete_time,jdbcType = VARCHAR},
+        #{deleter,jdbcType = VARCHAR}
+        )
+    </insert>
+    <update id="update" parameterType="com.fof.init.entity.SysRoleInfoEntity">
+        UPDATE SYS_MODULE_ELEMENT SET
+        <if test="name != null and name != ''">
+            NAME = #{name},
+        </if>
+        <if test="code != null and code != ''">
+            CODE = #{code},
+        </if>
+        <if test="type != null and type != ''">
+            TYPE = #{type},
+        </if>
+        <if test="null != description and description != ''">
+            DESCRIPTION = #{description},
+        </if>
+        <if test="null != state and state != ''">
+            STATE = #{state},
+        </if>
+        <if test="null != module_id and module_id != ''">
+            MODULE_ID = #{module_id},
+        </if>
+        <if test="null != authority_id and authority_id != ''">
+            AUTHORITY_ID = #{authority_id},
+        </if>
+        <if test="delete_flag != null and delete_flag != ''">
+            DELETE_FLAG = #{delete_flag},
+        </if>
+        <if test="create_time != null and create_time != ''">
+            CREATE_TIME = #{create_time},
+        </if>
+        <if test="creater != null and creater != ''">
+            CREATER = #{creater},
+        </if>
+        <if test="delete_time != null and delete_time != ''">
+            DELETE_TIME = #{delete_time},
+        </if>
+        <if test="deleter != null and deleter != ''">
+            DELETER = #{deleter},
+        </if>
+        <if test="updater != null and updater != ''">
+            UPDATER = #{updater},
+        </if>
+        <include refid="update_sql" />
+        WHERE ID = #{id}
+    </update>
+
+    <delete id="deleteByIdList">
+        DELETE FROM SYS_MODULE_ELEMENT WHERE  ID IN
+        <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <select id="checkCode" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+  	      SELECT COUNT(1) FROM SYS_MODULE_ELEMENT WHERE 1=1 AND DELETE_FLAG='0'AND CODE='${code}'
+  	</select>
+
+    <select id="getElementByRole" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
+        SELECT T1.* FROM SYS_MODULE_ELEMENT  T1
+        JOIN  SYS_ROLE_AUTHORITY T2 ON T1.AUTHORITY_ID=T2.AUTHORITY_ID
+        WHERE
+        <if test="role_id != null and role_id != ''">
+            T2.ROLE_ID=#{role_id,jdbcType = VARCHAR}
+        </if>
+        <if test="module_id != null and module_id != ''">
+            and T1.MODULE_ID=#{module_id,jdbcType = VARCHAR}
+        </if>
+    </select>
+
+    <select id="getByModuleId" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.lang.String">
+        SELECT <include refid="all_columns"/> FROM SYS_MODULE_ELEMENT WHERE 1 = 1  AND DELETE_FLAG='0' AND module_id = #{id}
+    </select>
+
+    <select id="getByIdList" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.lang.String">
+        SELECT <include refid="all_columns"/> FROM SYS_MODULE_ELEMENT WHERE 1 = 1  AND DELETE_FLAG='0' AND ID IN
+        <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+
+    <select id="getElementByUserId" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
+         SELECT A.* FROM SYS_MODULE_ELEMENT A
+			JOIN (SELECT AUTHORITY_ID,ROLE_ID FROM  SYS_ROLE_AUTHORITY) B ON A.AUTHORITY_ID=B.AUTHORITY_ID
+			JOIN (SELECT DISTINCT ROLE_ID,USER_ID  FROM SYS_ROLE_USER) C  ON B.ROLE_ID=C.ROLE_ID AND C.USER_ID=#{userId}
+    </select>
+</mapper>

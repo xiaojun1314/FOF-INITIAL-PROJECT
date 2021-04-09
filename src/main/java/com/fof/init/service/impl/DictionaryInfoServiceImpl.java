@@ -33,17 +33,19 @@ public class DictionaryInfoServiceImpl implements IDictionaryInfoService {
 
 	@Transactional(value = "transactionManager")
 	public Integer insert(SysDictionaryInfoEntity entity) {
+		entity.setCreater(CommonUtil.getSecurityUserInfo().getId());
 		return dictionaryInfoDao.insert(entity);
 	}
 
 	@Transactional(value = "transactionManager")
 	public Integer update(SysDictionaryInfoEntity entity) {
+		entity.setUpdater(CommonUtil.getSecurityUserInfo().getId());
 		return dictionaryInfoDao.update(entity);
 	}
 
 	@Transactional(value = "transactionManager")
-	public Integer delete(String deleter,List<String> idsList) {
-		return dictionaryInfoDao.delete(deleter,idsList);
+	public Integer delete(List<String> idList) {
+		return dictionaryInfoDao.delete(idList);
 	}
 
     /**验证编码*/

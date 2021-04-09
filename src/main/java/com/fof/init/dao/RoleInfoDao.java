@@ -16,7 +16,7 @@ public interface RoleInfoDao {
 
     public Integer update(SysRoleInfoEntity entity);
 
-    public Integer delete(@Param(value = "deleter") String deleter, @Param("idList") List<String> idList);
+    public Integer deleteIdList(@Param("idList") List<String> idList);
 
     public Integer checkCode(SysRoleInfoEntity entity);
 

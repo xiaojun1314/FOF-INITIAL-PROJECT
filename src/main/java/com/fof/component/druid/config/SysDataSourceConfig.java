@@ -32,11 +32,20 @@ public class SysDataSourceConfig {
         return new JdbcTemplate(dataSource);
     }
 
+    /*
+	@Bean
+	@ConfigurationProperties(prefix="mybatis.configuration")
+	public org.apache.ibatis.session.Configuration globalConfiguration() {
+		return new org.apache.ibatis.session.Configuration();
+	}
+*/
 	@Bean(name = "sqlSessionFactory")
+	//public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource,org.apache.ibatis.session.Configuration config) throws Exception {
 	public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
 		SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
 		bean.setDataSource(dataSource);
-		bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath*:mapper/**/*.xml"));
+		// bean.setConfiguration(config);
+		bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/**/*.xml"));
 		return bean.getObject();
 	}
 	

@@ -82,10 +82,9 @@
     </insert>
 
     <delete id="delete">
-        UPDATE SYS_USERSTATUS_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-        WHERE FOREIGNID IN
-        <foreach item="id" collection="ids" open="(" separator="," close=")">
-            #{id,jdbcType = VARCHAR}
+        DELETE FROM SYS_USERSTATUS_INFO WHERE  FOREIGNID IN
+        <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
+            #{id,jdbcType=VARCHAR}
         </foreach>
     </delete>
 

@@ -15,7 +15,7 @@ public interface IRoleInfoService {
 		
 	public Integer update(SysRoleInfoEntity entity);
 	 
-	public Integer delete(String deleter,List<String> idsList);
+	public Integer delete(List<String> idsList);
 	
 	public boolean checkCode(SysRoleInfoEntity entity);
 	

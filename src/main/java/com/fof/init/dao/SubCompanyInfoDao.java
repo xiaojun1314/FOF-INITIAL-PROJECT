@@ -2,6 +2,8 @@ package com.fof.init.dao;
 
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysSubCompanyEntity;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,4 +25,6 @@ public interface SubCompanyInfoDao {
     public Integer update(SysSubCompanyEntity entity);
 
     public Integer checkCode(SysSubCompanyEntity entity);
+
+    public Integer delete(@Param("idList") List<String> idList);
 }

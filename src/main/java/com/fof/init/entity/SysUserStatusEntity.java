@@ -31,7 +31,6 @@ public class SysUserStatusEntity extends BaseNoIdEntity {
     @JoinColumn(name="FOREIGNID",unique=true)
     private SysUserInfoEntity sysUserInfoEntity;
 
-
     @Transient
     private String accountNonExpiredText;
 

@@ -1,9 +1,13 @@
 package com.fof.init.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.fof.common.bean.JsonResult;
 import com.fof.common.entity.MenuTree;
 import com.fof.common.entity.TreeBreadcrumb;
+import com.fof.common.entity.TreeDataModel;
 import com.fof.common.util.Constants;
+import com.fof.common.util.ResultTool;
 import com.fof.common.util.StringHelper;
 import com.fof.init.entity.SysCompanyEntity;
 import com.fof.init.entity.SysDepartmentEntity;
@@ -44,110 +48,111 @@ public class OrgManageController {
     private IDepartmentInfoService departmentInfoService;
 
     @RequestMapping(value="/queryOrgTreeInfo",method= RequestMethod.POST)
-    public String queryOrgTreeInfo(HttpServletResponse response, HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+    public void queryOrgTreeInfo(HttpServletResponse response, HttpServletRequest request,@RequestBody Map<String, Object> searchParams) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         String findType= searchParams.get("findType").toString();
-        System.out.println("findType"+findType);
         searchParams.clear();
-        searchParams.put("delete_flag", Constants.DELFLG_N);
         List<SysCompanyEntity> companyList=companyInfoService.getAll(searchParams, "order_no=ascend");
-        List<MenuTree> mainTreeList=new ArrayList<MenuTree>();
+        List<TreeDataModel> treeDataModelList=new ArrayList<TreeDataModel>();
         for(SysCompanyEntity entity:companyList) {
-            MenuTree menuTree=new MenuTree();
-            menuTree.setKey(entity.getId());
-            menuTree.setTitle(entity.getName());
-            menuTree.setType("0");
-            menuTree.setOrderNo(entity.getOrder_no());
-            menuTree.setDescription(entity.getDescription());
+            TreeDataModel treeDataModel=new TreeDataModel();
+            treeDataModel.setKey(entity.getId());
+            treeDataModel.setTitle(entity.getName());
+            treeDataModel.setType("0");
+            treeDataModel.setRowIndex(entity.getOrder_no());
+            treeDataModel.setDescription(entity.getDescription());
             searchParams.clear();
             searchParams.put("foreignId", entity.getId());
-            searchParams.put("delete_flag", Constants.DELFLG_N);
             List<SysSubCompanyEntity> subCompanyList= subCompanyInfoService.getAll(searchParams, "order_no=ascend");
-            List<MenuTree> childrenTreeList=new ArrayList<MenuTree>();
+            List<TreeDataModel> childrenTreeDataModelList=new ArrayList<TreeDataModel>();
             for(SysSubCompanyEntity subEntity:subCompanyList) {
-                MenuTree subMenuTree=new MenuTree();
-                subMenuTree.setKey(subEntity.getId());
-                subMenuTree.setTitle(subEntity.getName());
-                subMenuTree.setType("1");
+                TreeDataModel subTreeDataModel=new TreeDataModel();
+                subTreeDataModel.setKey(subEntity.getId());
+                subTreeDataModel.setTitle(subEntity.getName());
+                subTreeDataModel.setType("1");
                 searchParams.clear();
                 searchParams.put("parent_id",subEntity.getId());
-                searchParams.put("delete_flag", Constants.DELFLG_N);
                 if(findType.equals("ALL")){
-                    List<MenuTree> list= getChildrenMenu(searchParams);
+                    List<TreeDataModel> list= getChildrenMenu(searchParams);
                     if(list.size()>0) {
-                        subMenuTree.setChildren(list);
+                        subTreeDataModel.setChildren(list);
                     }
                 }
-                childrenTreeList.add(subMenuTree);
+                childrenTreeDataModelList.add(subTreeDataModel);
             }
-            menuTree.setChildren(childrenTreeList);
-            mainTreeList.add(menuTree);
+            treeDataModel.setChildren(childrenTreeDataModelList);
+            treeDataModelList.add(treeDataModel);
         }
-        json.put("unitTreeData",mainTreeList);
-        response.getWriter().write(json.toJSONString());
-        return null;
+        TreeDataModel treeDataModel=new TreeDataModel();
+        treeDataModel.setKey("root");
+        treeDataModel.setTitle("组织架构");
+        treeDataModel.setIsLeaf(false);
+        treeDataModel.setIcon("ClusterOutlined");
+        treeDataModel.setChildren(treeDataModelList);
+        List<TreeDataModel> childrenTreeList=new ArrayList<TreeDataModel>();
+        childrenTreeList.add(treeDataModel);
+        json.put("unitTreeData",childrenTreeList);
+        JsonResult result = ResultTool.success(json);
+        response.getWriter().write(JSON.toJSONString(result));
     }
 
-    private List<MenuTree> getChildrenMenu(Map<String, Object> searchParams){
-        List<MenuTree> childrenTreeList=new ArrayList<MenuTree>();
+    private List<TreeDataModel> getChildrenMenu(Map<String, Object> searchParams){
+        List<TreeDataModel> childrenTreeDataModelList=new ArrayList<TreeDataModel>();
         List<SysDepartmentEntity>   childrenList= departmentInfoService.getAll(searchParams, "order_no=ascend");
         for(SysDepartmentEntity entity:childrenList) {
-            MenuTree menuTree=new MenuTree();
-            menuTree.setKey(entity.getId());
-            menuTree.setTitle(entity.getName());
-            menuTree.setType("2");
+            TreeDataModel treeDataModel=new TreeDataModel();
+            treeDataModel.setKey(entity.getId());
+            treeDataModel.setTitle(entity.getName());
+            treeDataModel.setType("2");
             Map<String, Object> childrenParams=new HashMap<String, Object>();
             childrenParams.put("parent_id",entity.getId());
             List<SysDepartmentEntity>  list=departmentInfoService.getAll(childrenParams,"order_no=ascend");
             if(list.size()>0) {
-                List<MenuTree> bootList =getChildrenMenu(childrenParams);
-                menuTree.setChildren(bootList);
+                List<TreeDataModel> subTreeDataModelList =getChildrenMenu(childrenParams);
+                treeDataModel.setChildren(subTreeDataModelList);
             }
-            childrenTreeList.add(menuTree);
+            childrenTreeDataModelList.add(treeDataModel);
         }
-
-        return childrenTreeList;
+        return childrenTreeDataModelList;
     }
 
     @RequestMapping(value="/queryOrgTreeById",method=RequestMethod.POST)
-    public String queryOrgTreeById(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams)throws Exception{
+    public void queryOrgTreeById(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> searchParams) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
-        if(null!=searchParams.get("id")&&!"root".equals(searchParams.get("id"))) {
-            TreeBreadcrumb treeBreadcrumb=new TreeBreadcrumb();
-            treeBreadcrumb.setOneLevel("组织架构");
-            /**总部*/
-            if(searchParams.get("type").equals("0")) {
-                SysCompanyEntity entity =companyInfoService.findById(searchParams.get("id").toString());
-                treeBreadcrumb.setTwoLevel(entity.getName());
-                json.put("entity",entity);
-                json.put("type","0");
-            }
-            /**分部*/
-            if(searchParams.get("type").equals("1")) {
-                SysSubCompanyEntity entity =subCompanyInfoService.findById(searchParams.get("id").toString());
-                treeBreadcrumb.setThreeLevel(entity.getName());
-                SysCompanyEntity sysCompanyEntity=companyInfoService.findById(entity.getForeignId());
-                treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
-                json.put("entity",entity);
-                json.put("type","1");
-            }
-            /**部门*/
-            if(searchParams.get("type").equals("2")) {
-                SysDepartmentEntity entity =departmentInfoService.findById(searchParams.get("id").toString());
-                treeBreadcrumb.setFourLevel(entity.getName());
-                SysSubCompanyEntity sysSubCompanyEntity=subCompanyInfoService.findById(entity.getForeignId());
-                treeBreadcrumb.setThreeLevel(sysSubCompanyEntity.getName());
-                SysCompanyEntity sysCompanyEntity=companyInfoService.findById(sysSubCompanyEntity.getForeignId());
-                treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
-                json.put("entity",entity);
-                json.put("type","2");
-            }
-            json.put("treeBreadcrumb",treeBreadcrumb);
+        TreeBreadcrumb treeBreadcrumb=new TreeBreadcrumb();
+        treeBreadcrumb.setOneLevel("组织架构");
+        /**总部*/
+        if(searchParams.get("type").equals("0")) {
+            SysCompanyEntity entity =companyInfoService.findById(searchParams.get("id").toString());
+            treeBreadcrumb.setTwoLevel(entity.getName());
+            json.put("entity",entity);
+            json.put("type","0");
         }
-        response.getWriter().write(json.toJSONString());
-        return null;
+        /**分部*/
+        if(searchParams.get("type").equals("1")) {
+            SysSubCompanyEntity entity =subCompanyInfoService.findById(searchParams.get("id").toString());
+            treeBreadcrumb.setThreeLevel(entity.getName());
+            SysCompanyEntity sysCompanyEntity=companyInfoService.findById(entity.getForeignId());
+            treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
+            json.put("entity",entity);
+            json.put("type","1");
+        }
+        /**部门*/
+        if(searchParams.get("type").equals("2")) {
+            SysDepartmentEntity entity =departmentInfoService.findById(searchParams.get("id").toString());
+            treeBreadcrumb.setFourLevel(entity.getName());
+            SysSubCompanyEntity sysSubCompanyEntity=subCompanyInfoService.findById(entity.getForeignId());
+            treeBreadcrumb.setThreeLevel(sysSubCompanyEntity.getName());
+            SysCompanyEntity sysCompanyEntity=companyInfoService.findById(sysSubCompanyEntity.getForeignId());
+            treeBreadcrumb.setTwoLevel(sysCompanyEntity.getName());
+            json.put("entity",entity);
+            json.put("type","2");
+        }
+        json.put("treeBreadcrumb",treeBreadcrumb);
+        JsonResult result = ResultTool.success(json);
+        response.getWriter().write(JSON.toJSONString(result));
     }
 
     public  int[] initPage(String currentPage,String pageSize1) {

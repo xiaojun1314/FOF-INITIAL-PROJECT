@@ -17,7 +17,7 @@ public interface IDictionaryTypeService {
 	
 	public Integer update(SysDictionaryTypeEntity entity);
 
-	public Integer delete(String deleter,List<String> idsList);
+	public Integer delete(List<String> idList);
 	
 	boolean  checkCode(SysDictionaryTypeEntity entity);
 }

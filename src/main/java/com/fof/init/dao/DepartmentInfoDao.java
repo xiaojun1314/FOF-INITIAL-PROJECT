@@ -1,6 +1,7 @@
 package com.fof.init.dao;
 
 import com.fof.init.entity.SysDepartmentEntity;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -17,13 +18,18 @@ public interface DepartmentInfoDao {
 
     public SysDepartmentEntity findById(String id);
 
-    Integer insert(SysDepartmentEntity entity);
+    public List<SysDepartmentEntity> findByForeignId(Map<String,Object> map);
 
-    Integer update(SysDepartmentEntity entity);
+    public Integer insert(SysDepartmentEntity entity);
 
-    Integer checkCode(SysDepartmentEntity entity);
+    public Integer update(SysDepartmentEntity entity);
 
-    List<SysDepartmentEntity> getAllDepartPart(Map<String,Object> map);
+    public Integer checkCode(SysDepartmentEntity entity);
 
-    Integer getCountDepartPart(Map<String,Object> map);
+    public List<SysDepartmentEntity> getAllDepartPart(Map<String,Object> map);
+
+    public Integer getCountDepartPart(Map<String,Object> map);
+
+    public Integer deleteByIdList(@Param("idList") List<String> idList);
+
 }

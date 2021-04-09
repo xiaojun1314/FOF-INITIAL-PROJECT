@@ -22,6 +22,9 @@
         <if test="id != null and id != ''">
             AND ID=#{id}
         </if>
+        <if test="foreignId != null and foreignId != ''">
+            AND FOREIGNID=#{foreignId}
+        </if>
         <if test="foreignIds != null and foreignIds != ''">
             AND FOREIGNID IN
             <foreach item="item" index="index" collection="foreignIds.split(',')"  open="(" separator="," close=")">
@@ -150,9 +153,8 @@
         WHERE ID = #{id}
     </update>
 
-    <delete id="delete">
-        UPDATE SYS_ROLE_INFO SET <include refid="delete_sql" />, DELETER=#{deleter,jdbcType = VARCHAR}
-        WHERE ID IN
+    <delete id="deleteIdList">
+        DELETE FROM SYS_ROLE_INFO WHERE  ID IN
         <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
             #{id,jdbcType=VARCHAR}
         </foreach>
