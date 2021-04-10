@@ -9,4 +9,6 @@ public interface IRoleAndAuthorityService {
 
 	public void insertModuleElementToAuthorityByRole(List<String> pageElementIdsList,String role_id);
 
+	public void insertModuleOperationToAuthorityByRole(List<String> moduleOperationIdList,String role_id);
+
 }

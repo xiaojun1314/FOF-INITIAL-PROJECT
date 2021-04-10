@@ -3,12 +3,10 @@ package com.fof.init.service.impl;
 import com.fof.common.entity.TreeDataModel;
 import com.fof.common.util.CommonUtil;
 import com.fof.common.util.Constants;
-import com.fof.init.dao.AuthorityInfoDao;
-import com.fof.init.dao.ModuleElementDao;
-import com.fof.init.dao.ModuleInfoDao;
-import com.fof.init.dao.RoleAndAuthorityDao;
+import com.fof.init.dao.*;
 import com.fof.init.entity.SysModuleElementEntity;
 import com.fof.init.entity.SysModuleInfoEntity;
+import com.fof.init.entity.SysModuleOperationEntity;
 import com.fof.init.service.IModuleInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +23,15 @@ public class ModuleInfoServiceImpl implements IModuleInfoService {
 	@Autowired
 	private ModuleInfoDao moduleInfoDao;
 
-    @Autowired
-    private ModuleElementDao moduleElementDao;
+	@Autowired
+	private ModuleElementDao moduleElementDao;
 
-    @Autowired
-    private AuthorityInfoDao authorityInfoDao;
+
+	@Autowired
+	private ModuleOperationDao moduleOperationDao;
+
+	@Autowired
+	private AuthorityInfoDao authorityInfoDao;
 
 	@Autowired
 	private RoleAndAuthorityDao roleAndAuthorityDao;
@@ -88,27 +90,40 @@ public class ModuleInfoServiceImpl implements IModuleInfoService {
 
 		List<SysModuleInfoEntity> sysModuleInfoList= moduleInfoDao.getAllById(id);
 
-        List<SysModuleInfoEntity> sysLeafModuleInfoList = sysModuleInfoList.stream().filter(entity ->entity.getIs_leaf().equals("1")).collect(Collectors.toList());
-        // 全部模块ID
-        List<String> moduleIdList = sysModuleInfoList.stream().map(item -> item.getId()).collect(Collectors.toList());
-        // 页节点ID
-        List<String> LeafModuleIdList = sysLeafModuleInfoList.stream().map(item -> item.getId()).collect(Collectors.toList());
-        if(LeafModuleIdList.size()>0){
-            Map<String, Object> searchParams =new HashMap<String, Object>();
-            searchParams.put("moduleIdList",LeafModuleIdList);
-            List<SysModuleElementEntity> sysModuleElementList =moduleElementDao.getAll(searchParams);
-            List<String> moduleElementIdList = sysModuleElementList.stream().map(item -> item.getId()).collect(Collectors.toList());
+		List<SysModuleInfoEntity> sysLeafModuleInfoList = sysModuleInfoList.stream().filter(entity ->entity.getIs_leaf().equals("1")).collect(Collectors.toList());
+		// 全部模块ID
+		List<String> moduleIdList = sysModuleInfoList.stream().map(item -> item.getId()).collect(Collectors.toList());
+		// 页节点ID
+		List<String> LeafModuleIdList = sysLeafModuleInfoList.stream().map(item -> item.getId()).collect(Collectors.toList());
+		if(LeafModuleIdList.size()>0){
+			Map<String, Object> searchParams =new HashMap<String, Object>();
+			searchParams.put("moduleIdList",LeafModuleIdList);
+			List<SysModuleElementEntity> sysModuleElementList = moduleElementDao.getAll(searchParams);
+			List<String> moduleElementIdList = sysModuleElementList.stream().map(item -> item.getId()).collect(Collectors.toList());
 			List<String> authorityIdList = sysModuleElementList.stream().map(item -> item.getAuthority_id()).collect(Collectors.toList());
-            if(moduleElementIdList.size()>0){
+			if(moduleElementIdList.size()>0){
 				/*删除模块与角色关系信息*/
 				roleAndAuthorityDao.deleteByAuthorityId(authorityIdList);
 				/*删除模块元素信息*/
-                moduleElementDao.deleteByIdList(moduleElementIdList);
+				moduleElementDao.deleteByIdList(moduleElementIdList);
 				/*删除权限表信息*/
 				authorityInfoDao.deleteByIdList(authorityIdList);
-            }
-        }
-        moduleInfoDao.deleteByIdList(moduleIdList);
+			}
+			List<SysModuleOperationEntity> sysModuleOperationList = moduleOperationDao.getAll(searchParams);
+
+			List<String> moduleOperationIdList = sysModuleOperationList.stream().map(item -> item.getId()).collect(Collectors.toList());
+
+			List<String> operationAuthorityIdList = sysModuleOperationList.stream().map(item -> item.getAuthority_id()).collect(Collectors.toList());
+			if(sysModuleOperationList.size()>0){
+				/*删除操作与角色关系信息*/
+				roleAndAuthorityDao.deleteByAuthorityId(operationAuthorityIdList);
+				/*删除操作元素信息*/
+				moduleOperationDao.deleteByIdList(moduleOperationIdList);
+				/*删除权限表信息*/
+				authorityInfoDao.deleteByIdList(operationAuthorityIdList);
+			}
+		}
+		moduleInfoDao.deleteByIdList(moduleIdList);
 	}
 
 	public SysModuleInfoEntity findById(String id) {

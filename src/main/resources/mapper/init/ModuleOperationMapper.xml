@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.fof.init.dao.ModuleElementDao">
+<mapper namespace="com.fof.init.dao.ModuleOperationDao">
      <sql id="all_columns">
-        ID,NAME,CODE,TYPE,DESCRIPTION,STATE,MODULE_ID,AUTHORITY_ID,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
+        ID,NAME,CODE,URL,DESCRIPTION,MODULE_ID,AUTHORITY_ID,DELETE_FLAG,CREATE_TIME,CREATER,UPDATE_TIME,UPDATER,DELETE_TIME,DELETER
     </sql> 
     <sql id="update_sql">
 		UPDATE_TIME = to_char(sysdate,'yyyy-MM-dd HH24:mi:ss')
@@ -38,14 +38,11 @@
         <if test="code != null and code != ''">
             AND CODE=#{code}
         </if>
-        <if test="type != null and type != ''">
-            AND TYPE=#{type}
+        <if test="url != null and url != ''">
+            AND URL=#{url}
         </if>
         <if test="description != null and description != ''">
             AND DESCRIPTION=#{description}
-        </if>
-        <if test="state != null and state != ''">
-            AND STATE=#{state}
         </if>
         <if test="authority_id != null and authority_id != ''">
             AND AUTHORITY_ID=#{authority_id}
@@ -74,13 +71,13 @@
     </sql>
 
     <!-- 查询所有数据 -->
-    <select id="getAll" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
+    <select id="getAll" resultType="com.fof.init.entity.SysModuleOperationEntity" parameterType="java.util.HashMap">
         <if test="limit != null and limit != ''">
             <if test="limit>=0">
                 <include refid="pagination_start" />
             </if>
         </if>
-        SELECT * FROM SYS_MODULE_ELEMENT where 1=1
+        SELECT * FROM SYS_MODULE_OPERATION where 1=1
 
         <include refid="sql_where" />
 
@@ -98,21 +95,20 @@
     </select>
 
     <select id="getCount" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM SYS_MODULE_ELEMENT WHERE 1=1
+        SELECT COUNT(*) FROM SYS_MODULE_OPERATION WHERE 1=1
         <include refid="sql_where" />
     </select>
-    <insert id="insert" parameterType="com.fof.init.entity.SysModuleElementEntity" >
+    <insert id="insert" parameterType="com.fof.init.entity.SysModuleOperationEntity" >
         <selectKey resultType="java.lang.String" order="BEFORE" keyProperty="id">
             SELECT LOWER(SYS_GUID()) AS GUID FROM DUAL
         </selectKey>
-        INSERT INTO SYS_MODULE_ELEMENT (<include refid="all_columns" />)
+        INSERT INTO SYS_MODULE_OPERATION (<include refid="all_columns" />)
         VALUES (
         #{id,jdbcType = VARCHAR},
         #{name,jdbcType = VARCHAR},
         #{code,jdbcType = VARCHAR},
-        #{type,jdbcType = VARCHAR},
+        #{url,jdbcType = VARCHAR},
         #{description,jdbcType = VARCHAR},
-        #{state,jdbcType = VARCHAR},
         #{module_id,jdbcType = VARCHAR},
         #{authority_id,jdbcType = VARCHAR},
         #{delete_flag,jdbcType = VARCHAR},
@@ -124,22 +120,19 @@
         #{deleter,jdbcType = VARCHAR}
         )
     </insert>
-    <update id="update" parameterType="com.fof.init.entity.SysModuleElementEntity">
-        UPDATE SYS_MODULE_ELEMENT SET
+    <update id="update" parameterType="com.fof.init.entity.SysModuleOperationEntity">
+        UPDATE SYS_MODULE_OPERATION SET
         <if test="name != null and name != ''">
             NAME = #{name},
         </if>
         <if test="code != null and code != ''">
             CODE = #{code},
         </if>
-        <if test="type != null and type != ''">
-            TYPE = #{type},
+        <if test="url != null and url != ''">
+            URL = #{url},
         </if>
         <if test="null != description and description != ''">
             DESCRIPTION = #{description},
-        </if>
-        <if test="null != state and state != ''">
-            STATE = #{state},
         </if>
         <if test="null != module_id and module_id != ''">
             MODULE_ID = #{module_id},
@@ -170,18 +163,18 @@
     </update>
 
     <delete id="deleteByIdList">
-        DELETE FROM SYS_MODULE_ELEMENT WHERE  ID IN
+        DELETE FROM SYS_MODULE_OPERATION WHERE  ID IN
         <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
             #{id,jdbcType=VARCHAR}
         </foreach>
     </delete>
 
     <select id="checkCode" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-  	      SELECT COUNT(1) FROM SYS_MODULE_ELEMENT WHERE 1=1 AND CODE='${code}'
+  	      SELECT COUNT(1) FROM SYS_MODULE_OPERATION WHERE 1=1 AND CODE='${code}'
   	</select>
 
-    <select id="getElementByRole" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
-        SELECT T1.* FROM SYS_MODULE_ELEMENT  T1
+    <select id="getOperationByRole" resultType="com.fof.init.entity.SysModuleOperationEntity" parameterType="java.util.HashMap">
+        SELECT T1.* FROM SYS_MODULE_OPERATION  T1
         JOIN  SYS_ROLE_AUTHORITY T2 ON T1.AUTHORITY_ID=T2.AUTHORITY_ID
         WHERE
         <if test="role_id != null and role_id != ''">
@@ -192,21 +185,15 @@
         </if>
     </select>
 
-    <select id="getByModuleId" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.lang.String">
-        SELECT <include refid="all_columns"/> FROM SYS_MODULE_ELEMENT WHERE 1 = 1  AND module_id = #{id}
+    <select id="getByModuleId" resultType="com.fof.init.entity.SysModuleOperationEntity" parameterType="java.lang.String">
+        SELECT <include refid="all_columns"/> FROM SYS_MODULE_OPERATION WHERE 1 = 1  AND module_id = #{id}
     </select>
 
-    <select id="getByIdList" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.lang.String">
-        SELECT <include refid="all_columns"/> FROM SYS_MODULE_ELEMENT WHERE 1 = 1  AND ID IN
+    <select id="getByIdList" resultType="com.fof.init.entity.SysModuleOperationEntity" parameterType="java.lang.String">
+        SELECT <include refid="all_columns"/> FROM SYS_MODULE_OPERATION WHERE 1 = 1  AND ID IN
         <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
             #{id,jdbcType=VARCHAR}
         </foreach>
     </select>
 
-
-    <select id="getElementByUserId" resultType="com.fof.init.entity.SysModuleElementEntity" parameterType="java.util.HashMap">
-         SELECT A.* FROM SYS_MODULE_ELEMENT A
-			JOIN (SELECT AUTHORITY_ID,ROLE_ID FROM  SYS_ROLE_AUTHORITY) B ON A.AUTHORITY_ID=B.AUTHORITY_ID
-			JOIN (SELECT DISTINCT ROLE_ID,USER_ID  FROM SYS_ROLE_USER) C  ON B.ROLE_ID=C.ROLE_ID AND C.USER_ID=#{userId}
-    </select>
 </mapper>

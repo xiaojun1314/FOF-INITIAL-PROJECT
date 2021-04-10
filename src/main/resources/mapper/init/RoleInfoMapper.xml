@@ -167,4 +167,13 @@
     <select id="getById" resultType="com.fof.init.entity.SysRoleInfoEntity" parameterType="java.lang.String">
 		SELECT * FROM SYS_ROLE_INFO WHERE 1 = 1 AND DELETE_FLAG='0' AND ID = #{id}
     </select>
+
+    <select id="getByUserId" resultType="com.fof.init.entity.SysRoleInfoEntity" parameterType="java.lang.String">
+        SELECT T1.* FROM SYS_ROLE_INFO T1 JOIN SYS_ROLE_USER T2 ON T1.ID =T2.ROLE_ID AND T2.USER_ID= #{userId}
+    </select>
+
+    <select id="getByOperationUrl" resultType="com.fof.init.entity.SysRoleInfoEntity" parameterType="java.lang.String">
+        SELECT T1.* FROM SYS_ROLE_INFO T1 JOIN SYS_ROLE_AUTHORITY T2 ON T1.ID=T2.ROLE_ID JOIN
+         (SELECT AUTHORITY_ID FROM SYS_MODULE_OPERATION WHERE URL=#{url}) T3 ON T2.AUTHORITY_ID=T3.AUTHORITY_ID
+    </select>
 </mapper>

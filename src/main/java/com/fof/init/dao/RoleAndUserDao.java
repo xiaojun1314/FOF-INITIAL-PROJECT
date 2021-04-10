@@ -15,4 +15,6 @@ public interface RoleAndUserDao {
 	Integer removeRoleAndUser(SysRoleToUserEntity entity);
 	
 	Integer insertRoleAndUser(SysRoleToUserEntity entity);
+
+
 }

@@ -11,6 +11,7 @@ import com.fof.init.entity.SysUserInfoEntity;
 import com.fof.init.service.IUserInfoService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,6 +41,7 @@ public class UserManageController {
 		response.getWriter().write(JSON.toJSONString(result));
 	}
 	/**删除信息*/
+	// @PreAuthorize("hasRole('ROLE_ADMIN')")
 	@RequestMapping(value="/removeUserInfo",method=RequestMethod.POST)
 	public void removeUserInfo(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> params) throws Exception{
 		JSONObject json = new JSONObject();

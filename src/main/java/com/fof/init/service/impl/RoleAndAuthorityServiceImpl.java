@@ -5,16 +5,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.fof.init.dao.ModuleElementDao;
-import com.fof.init.dao.RoleAndAuthorityDao;
+import com.fof.init.dao.*;
 import com.fof.init.entity.*;
 import com.fof.init.service.IRoleAndAuthorityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.fof.init.dao.AuthorityInfoDao;
-
-import com.fof.init.dao.MenuInfoDao;
 
 @Service
 public class RoleAndAuthorityServiceImpl implements IRoleAndAuthorityService {
@@ -27,6 +23,9 @@ public class RoleAndAuthorityServiceImpl implements IRoleAndAuthorityService {
 
 	@Autowired
 	private ModuleElementDao moduleElementDao;
+
+	@Autowired
+	private ModuleOperationDao moduleOperationDao;
 
 
 	@Transactional(value = "transactionManager")
@@ -64,6 +63,26 @@ public class RoleAndAuthorityServiceImpl implements IRoleAndAuthorityService {
 			for(SysModuleElementEntity  sysModuleElementEntity:moduleElementList){
 				SysRoleToAuthorityEntity sysRoleToAuthorityEntity=new SysRoleToAuthorityEntity();
 				sysRoleToAuthorityEntity.setAuthority_id(sysModuleElementEntity.getAuthority_id());
+				sysRoleToAuthorityEntity.setRole_id(role_id);
+				roleAndAuthorityDao.insertRoleAndAuth(sysRoleToAuthorityEntity);
+			}
+		}
+	}
+
+	@Transactional(value = "transactionManager")
+	public void insertModuleOperationToAuthorityByRole(List<String> pageOperationIdsList, String role_id) {
+		/**先删除菜单与权限对应关系*/
+		Map<String, Object> params =new HashMap<String, Object>();
+		params.put("role_id", role_id);
+		params.put("type", "2");
+		/**删除角色权限对应关系 通过 角色ID*/
+		roleAndAuthorityDao.deleteRoleAndAuthByRoleId(params);
+		/**添加菜单与权限对应关系*/
+		if(pageOperationIdsList.size()>0) {
+			List<SysModuleOperationEntity> moduleOperationList= moduleOperationDao.getByIdList(pageOperationIdsList);
+			for(SysModuleOperationEntity  sysModuleOperationEntity:moduleOperationList){
+				SysRoleToAuthorityEntity sysRoleToAuthorityEntity=new SysRoleToAuthorityEntity();
+				sysRoleToAuthorityEntity.setAuthority_id(sysModuleOperationEntity.getAuthority_id());
 				sysRoleToAuthorityEntity.setRole_id(role_id);
 				roleAndAuthorityDao.insertRoleAndAuth(sysRoleToAuthorityEntity);
 			}

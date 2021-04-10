@@ -3,25 +3,18 @@ package com.fof.init.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fof.common.bean.JsonResult;
-import com.fof.common.util.Constants;
 import com.fof.common.util.ResultTool;
 import com.fof.common.util.StringHelper;
-import com.fof.component.redis.util.CodeTableUtil;
-import com.fof.init.entity.SysModuleElementEntity;
 import com.fof.init.entity.SysModuleInfoEntity;
-import com.fof.init.entity.SysRoleInfoEntity;
-import com.fof.init.service.IModuleElementService;
+import com.fof.init.entity.SysModuleOperationEntity;
 import com.fof.init.service.IModuleInfoService;
-import com.fof.init.service.IRoleAndUserService;
+import com.fof.init.service.IModuleOperationService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -30,28 +23,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
+/*
  * @className: ModuleElementManageController
  * @author: jun
  * @date: 2021-04-01 21:03
  * @Depiction:
- **/
+ */
 
 @Controller
-@RequestMapping("/moduleElementManage")
-public class ModuleElementManageController {
+@RequestMapping("/moduleOperationManage")
+public class ModuleOperationManageController {
 
     @Autowired
-    private IModuleElementService moduleElementService;
+    private IModuleOperationService moduleOperationService;
 
     @Autowired
     private IModuleInfoService moduleInfoService;
 
-    @Resource
-    private CodeTableUtil codeTableUtil;
-
-    @RequestMapping(value="/queryModuleElementList",method= RequestMethod.POST)
-    public void queryModuleElementList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> searchParams) throws Exception{
+    @RequestMapping(value="/queryModuleOperationList",method= RequestMethod.POST)
+    public void queryModuleOperationList(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> searchParams) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         String selectKey= searchParams.get("selectKey").toString();
@@ -62,16 +52,15 @@ public class ModuleElementManageController {
         List<SysModuleInfoEntity> sysModuleInfoList= moduleInfoService.getLeafModuleById(temporaryParams);
 
         List<String> moduleIdList = sysModuleInfoList.stream().map(item -> item.getId()).collect(Collectors.toList());
-        List<SysModuleElementEntity> list =null;
+        List<SysModuleOperationEntity> list =null;
         if(selectKey.equals("root") || sysModuleInfoList.size()>0){
             if(sysModuleInfoList.size()>0){
                 searchParams.put("moduleIdList",moduleIdList);
             }
             searchParams.put("limit", pageParams[1]);
             searchParams.put("offset", pageParams[0]);
-            list =moduleElementService.getAll(searchParams, searchParams.containsKey("sorter")? StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
-            initCodeText(list);
-            int count =moduleElementService.getCount(searchParams);
+            list =moduleOperationService.getAll(searchParams, searchParams.containsKey("sorter")? StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
+            int count =moduleOperationService.getCount(searchParams);
             json.put("data", list);
             json.put("total", count);
         }else{
@@ -83,12 +72,12 @@ public class ModuleElementManageController {
         response.getWriter().write(JSON.toJSONString(result));
     }
 
-    @RequestMapping(value="/checkModuleElementCode",method= RequestMethod.POST)
-    public void checkModuleElementCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleElementEntity entity) throws Exception{
+    @RequestMapping(value="/checkModuleOperationCode",method= RequestMethod.POST)
+    public void checkModuleOperationCode(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleOperationEntity entity) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("application/json;charset=UTF-8");
         if(null==entity.getId()||(null!=entity.getId()&&!entity.getCode().equals(entity.getOldCode()))) {
-            boolean checkResult=moduleElementService.checkCode(entity);
+            boolean checkResult=moduleOperationService.checkCode(entity);
             json.put("checkResult", checkResult);
         }else{
             json.put("checkResult", true);
@@ -97,72 +86,71 @@ public class ModuleElementManageController {
         response.getWriter().write(JSON.toJSONString(result));
     }
 
-    @RequestMapping(value="/saveModuleElementInfo",method= RequestMethod.POST)
-    public void saveModuleElementInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleElementEntity entity) throws Exception{
+    @RequestMapping(value="/saveModuleOperationInfo",method= RequestMethod.POST)
+    public void saveModuleOperationInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleOperationEntity entity) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
-        moduleElementService.insert(entity);
+        moduleOperationService.insert(entity);
         JsonResult result = ResultTool.success(json);
         response.getWriter().write(JSON.toJSONString(result));
     }
 
 
-    @RequestMapping(value="/editModuleElementInfo",method= RequestMethod.POST)
-    public void editModuleElementInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleElementEntity entity)throws Exception{
+    @RequestMapping(value="/editModuleOperationInfo",method= RequestMethod.POST)
+    public void editModuleOperationInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody SysModuleOperationEntity entity)throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
-        moduleElementService.update(entity);
+        moduleOperationService.update(entity);
         JsonResult result = ResultTool.success(json);
         response.getWriter().write(JSON.toJSONString(result));
     }
 
     /**删除数据*/
-    @RequestMapping(value="/removeModuleElementInfo",method= RequestMethod.POST)
-    public void removeModuleElementInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> params)throws Exception{
+    @RequestMapping(value="/removeModuleOperationInfo",method= RequestMethod.POST)
+    public void removeModuleOperationInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> params)throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
         ArrayList<String> idList=(ArrayList<String>)params.get("ids");
-        moduleElementService.delete(idList);
+        moduleOperationService.delete(idList);
         JsonResult result = ResultTool.success(json);
         response.getWriter().write(JSON.toJSONString(result));
     }
-    @RequestMapping(value="/getModuleElementInfoByRole",method=RequestMethod.POST)
-    public void getModuleElementInfoByRole(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> params) throws Exception{
+
+    @RequestMapping(value="/getModuleOperationInfoByRole",method=RequestMethod.POST)
+    public void getModuleOperationInfoByRole(HttpServletResponse response,HttpServletRequest request,@RequestBody Map<String, Object> params) throws Exception{
         JSONObject json = new JSONObject();
         response.setContentType("text/html; charset=UTF-8");
 
         List<SysModuleInfoEntity> sysModuleInfoList=moduleInfoService.getModuleLevelName();
         // 已授权 元素列表 被选择元素列表
-        List<SysModuleElementEntity> authorizedElementList= moduleElementService.getElementByRole(params);
+        List<SysModuleOperationEntity> authorizedOperationList= moduleOperationService.getOperationByRole(params);
 
-        List<String> allCheckedElementIdList =authorizedElementList.stream().map( item ->item.getId()).collect(Collectors.toList());
+        List<String> allCheckedOperationIdList =authorizedOperationList.stream().map( item ->item.getId()).collect(Collectors.toList());
 
         for(SysModuleInfoEntity sysModuleInfoEntity:sysModuleInfoList) {
-            List<Map<String,String>> moduleElementList=new ArrayList<Map<String,String>>();
-            List<String> pageElementIdList=new ArrayList<String>();
+            List<Map<String,String>> moduleOperationList=new ArrayList<Map<String,String>>();
+            List<String> pageOperationIdList=new ArrayList<String>();
             params.put("module_id", sysModuleInfoEntity.getId());
-            List<SysModuleElementEntity> authorizedElementPartList= moduleElementService.getElementByRole(params);
-
-            List<String> partCheckedElementIdList=authorizedElementPartList.stream().map( item ->item.getId()).collect(Collectors.toList());
-
-            List<SysModuleElementEntity>  sysModuleElementList=moduleElementService.getByModuleId(sysModuleInfoEntity.getId());
-            for(SysModuleElementEntity sysModuleElementEntity:sysModuleElementList) {
+            List<SysModuleOperationEntity> authorizedOperationPartList= moduleOperationService.getOperationByRole(params);
+            List<String> partCheckedOperationIdList=authorizedOperationPartList.stream().map( item ->item.getId()).collect(Collectors.toList());
+            List<SysModuleOperationEntity>  sysModuleOperationList=moduleOperationService.getByModuleId(sysModuleInfoEntity.getId());
+            for(SysModuleOperationEntity sysModuleOperationEntity:sysModuleOperationList) {
                 Map<String,String> map=new HashMap<String,String>();
-                map.put("key", sysModuleElementEntity.getId());
-                map.put("label", sysModuleElementEntity.getName());
-                map.put("value", sysModuleElementEntity.getId());
-                moduleElementList.add(map);
-                pageElementIdList.add(sysModuleElementEntity.getId());
+                map.put("key", sysModuleOperationEntity.getId());
+                map.put("label", sysModuleOperationEntity.getName());
+                map.put("value", sysModuleOperationEntity.getId());
+                moduleOperationList.add(map);
+                pageOperationIdList.add(sysModuleOperationEntity.getId());
             }
-            /**页面元素 Options*/
-            sysModuleInfoEntity.setElementList(moduleElementList);
-            /**页面元素ID*/
-            sysModuleInfoEntity.setElementIdList(pageElementIdList);
+            /**模块操作 Options*/
+            sysModuleInfoEntity.setOperationList(moduleOperationList);
+            /**模块操作ID*/
+            sysModuleInfoEntity.setOperationIdList(pageOperationIdList);
             /**被选择页面元素ID*/
-            sysModuleInfoEntity.setCheckedList(partCheckedElementIdList);
+            sysModuleInfoEntity.setCheckedList(partCheckedOperationIdList);
         }
         json.put("moduleInfo", sysModuleInfoList);
-        json.put("allCheckListId", allCheckedElementIdList);
+        json.put("allCheckListId", allCheckedOperationIdList);
         JsonResult result = ResultTool.success(json);
         response.getWriter().write(JSON.toJSONString(result));
     }
@@ -171,17 +159,6 @@ public class ModuleElementManageController {
         int pageNumber = Integer.parseInt(StringUtils.defaultIfBlank(currentPage,"1"));
         int pageSize = Integer.parseInt(StringUtils.defaultIfBlank(pageSize1,"15"));
         return new int[] { pageNumber, pageSize };
-    }
-
-    private void initCodeText(List<SysModuleElementEntity> views) {
-        if (CollectionUtils.isEmpty(views)) {
-            return;
-        }
-        for (SysModuleElementEntity entity : views) {
-            if (!StringUtils.isEmpty(entity.getState())){
-                entity.setStateText(codeTableUtil.getCodesByGroupKey("SSI_CODE_TABLE", "MESTATE",entity.getState()).display);
-            }
-        }
     }
 
 }

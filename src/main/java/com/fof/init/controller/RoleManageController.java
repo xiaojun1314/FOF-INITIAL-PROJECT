@@ -149,6 +149,18 @@ public class RoleManageController {
   	}
 
 
+    @RequestMapping(value="/saveRoleAndMoudleOperationAndAuthInfo",method= RequestMethod.POST)
+    public void saveRoleAndMoudleOperationAndAuthInfo(HttpServletResponse response, HttpServletRequest request, @RequestBody Map<String, Object> params) throws Exception{
+        JSONObject json = new JSONObject();
+        response.setContentType("text/html; charset=UTF-8");
+        ArrayList<String> moduleOperationIdList=(ArrayList<String>)params.get("moduleOperationIds");
+        String role_id =params.get("role_id").toString();
+        roleAndAuthorityService.insertModuleOperationToAuthorityByRole(moduleOperationIdList,role_id);
+        JsonResult result = ResultTool.success();
+        response.getWriter().write(JSON.toJSONString(result));
+    }
+
+
     /**删除数据*/
     @SuppressWarnings("unchecked")
 	@RequestMapping(value="/removeRoleAndUser",method= RequestMethod.POST)

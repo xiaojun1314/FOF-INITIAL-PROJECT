@@ -63,6 +63,10 @@ public class SysModuleInfoEntity extends BaseNoIdEntity {
 	@JoinColumn(name = "MODULE_ID")
 	private List<SysModuleElementEntity> sysModuleElementEntityList = new ArrayList<SysModuleElementEntity>();
 
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "MODULE_ID")
+	private List<SysModuleOperationEntity> sysModuleOperationEntityList = new ArrayList<SysModuleOperationEntity>();
+
 	/**
 	 * 父类名称
 	 */
@@ -112,6 +116,13 @@ public class SysModuleInfoEntity extends BaseNoIdEntity {
 	/**已选择项*/
 	@Transient
 	private List<String> checkedList;
+
+	/**显示yuansu*/
+	@Transient
+	private List<Map<String,String>> operationList;
+
+	@Transient
+	private List<String> operationIdList;
 
 
 	public String getName() {
@@ -265,5 +276,29 @@ public class SysModuleInfoEntity extends BaseNoIdEntity {
 
 	public void setCheckedList(List<String> checkedList) {
 		this.checkedList = checkedList;
+	}
+
+	public List<SysModuleOperationEntity> getSysModuleOperationEntityList() {
+		return sysModuleOperationEntityList;
+	}
+
+	public void setSysModuleOperationEntityList(List<SysModuleOperationEntity> sysModuleOperationEntityList) {
+		this.sysModuleOperationEntityList = sysModuleOperationEntityList;
+	}
+
+	public List<Map<String, String>> getOperationList() {
+		return operationList;
+	}
+
+	public void setOperationList(List<Map<String, String>> operationList) {
+		this.operationList = operationList;
+	}
+
+	public List<String> getOperationIdList() {
+		return operationIdList;
+	}
+
+	public void setOperationIdList(List<String> operationIdList) {
+		this.operationIdList = operationIdList;
 	}
 }

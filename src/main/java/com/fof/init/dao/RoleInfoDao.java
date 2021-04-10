@@ -21,4 +21,8 @@ public interface RoleInfoDao {
     public Integer checkCode(SysRoleInfoEntity entity);
 
     public SysRoleInfoEntity getById(String id);
+
+    public List<SysRoleInfoEntity> getByUserId(String userId);
+
+    public List<SysRoleInfoEntity> getByOperationUrl(String url);
 }

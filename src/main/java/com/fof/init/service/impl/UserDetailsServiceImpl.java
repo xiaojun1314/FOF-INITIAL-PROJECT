@@ -1,7 +1,10 @@
 package com.fof.init.service.impl;
 
 import com.fof.common.bean.SecurityUserInfo;
+import com.fof.init.dao.RoleAndUserDao;
+import com.fof.init.dao.RoleInfoDao;
 import com.fof.init.dao.UserInfoDao;
+import com.fof.init.entity.SysRoleInfoEntity;
 import com.fof.init.entity.SysUserInfoEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,12 +17,16 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private UserInfoDao userInfoDao;
+
+    @Autowired
+    private RoleInfoDao roleInfoDao;
 
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         System.out.println("userName"+userName);
@@ -36,12 +43,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         sysUserInfoEntity.setAccountNonLocked(true);
         sysUserInfoEntity.setCredentialsNonExpired(true);
 */
+        List<SysRoleInfoEntity> sysRoleInfoList= roleInfoDao.getByUserId(sysUserInfoEntity.getId());
+
+        List<String> roleCodeList = sysRoleInfoList.stream().map(item -> "ROLE_"+item.getCode()).collect(Collectors.toList());
+
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
-        GrantedAuthority grantedAuthority1 = new SimpleGrantedAuthority("query_user");
-        grantedAuthorities.add(grantedAuthority);
-        grantedAuthorities.add(grantedAuthority1);
+        for(String roleCode: roleCodeList){
+            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(roleCode);
+            grantedAuthorities.add(grantedAuthority);
+        }
         sysUserInfoEntity.setAuthorities(grantedAuthorities);
+
+        //GrantedAuthority grantedAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
+        // GrantedAuthority grantedAuthority1 = new SimpleGrantedAuthority("query_user");
+        //grantedAuthorities.add(grantedAuthority);
+       // grantedAuthorities.add(grantedAuthority1);
+       // sysUserInfoEntity.setAuthorities(grantedAuthorities);
        // return new User(sysUserInfoEntity.getUserName(),sysUserInfoEntity.getPassWord(), true, true, true, true, grantedAuthorities);
        return  sysUserInfoEntity;
     }
