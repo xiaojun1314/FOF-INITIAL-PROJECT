@@ -123,14 +123,14 @@
     <select id="findById"  resultType="com.fof.init.entity.SysDepartmentEntity" parameterType="java.lang.String">
         SELECT
         <include refid="all_columns" />
-        from SYS_DEPARTMENT_INFO where  1=1 and DELETE_FLAG='0' and id =#{id}
+        from SYS_DEPARTMENT_INFO where  1=1 and id =#{id}
     </select>
 
 
     <select id="findByForeignId"  resultType="com.fof.init.entity.SysDepartmentEntity" parameterType="java.util.HashMap">
         SELECT
         <include refid="all_columns" />
-        from SYS_DEPARTMENT_INFO where  1=1 and DELETE_FLAG=#{delete_flag} and FOREIGNID =#{foreignId}
+        from SYS_DEPARTMENT_INFO where  1=1 and FOREIGNID =#{foreignId}
     </select>
 
     <insert id="insert" parameterType="com.fof.init.entity.SysDepartmentEntity" >
@@ -157,7 +157,7 @@
         )
     </insert>
     <select id="checkCode" parameterType="java.util.HashMap" resultType="java.lang.Integer">
-  	      select count(1) from SYS_DEPARTMENT_INFO where 1=1 and DELETE_FLAG='0' and code='${code}'
+  	      select count(1) from SYS_DEPARTMENT_INFO where 1=1 and code='${code}'
   	</select>
 
     <update id="update" parameterType="com.fof.init.entity.SysDepartmentEntity">
@@ -231,7 +231,7 @@
 
     <delete id="deleteByIdList">
         DELETE FROM SYS_DEPARTMENT_INFO
-            WHERE ID IN (SELECT DISTINCT ID FROM SYS_DEPARTMENT_INFO  where  DELETE_FLAG ='0' START WITH ID  IN
+            WHERE ID IN (SELECT DISTINCT ID FROM SYS_DEPARTMENT_INFO  START WITH ID  IN
             <foreach collection="idList" index="index" item="id" open="(" separator="," close=")">
                 #{id,jdbcType=VARCHAR}
             </foreach>

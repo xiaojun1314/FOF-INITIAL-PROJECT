@@ -116,7 +116,6 @@ public class UserManageController {
 		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
 		searchParams.put("limit", pageParams[1]);
 		searchParams.put("offset", pageParams[0]);
-		searchParams.put("delete_flag", Constants.DELFLG_N);
 		/**查询该角色里面已有的用户信息 flag==1*/
 		searchParams.put("flag", 1);
 		List<SysUserInfoEntity>  list =userInfoService.getAllByRoleId(searchParams, searchParams.containsKey("sorter")?StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
@@ -134,7 +133,6 @@ public class UserManageController {
 		int[] pageParams =initPage(StringHelper.null2String(searchParams.get("current")), StringHelper.null2String(searchParams.get("pageSize")));
 		searchParams.put("limit", pageParams[1]);
 		searchParams.put("offset", pageParams[0]);
-		searchParams.put("delete_flag", Constants.DELFLG_N);
 		searchParams.put("flag", 0);
 		List<SysUserInfoEntity>  list =userInfoService.getAllByRoleId(searchParams, searchParams.containsKey("sorter")?StringUtils.strip(searchParams.get("sorter").toString(),"{}"):"");
 		json.put("data", list);
